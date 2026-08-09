@@ -25,8 +25,6 @@
 - `clipora-win64-setup.exe` — обычная установка.
 - `clipora-win64-portable.zip` — распакуйте архив и запустите `Clipora.exe`.
 
-FFmpeg, FFprobe и .NET runtime уже включены. Дополнительные программы и компоненты не требуются.
-
 ## English
 
 **Clipora** is a focused Windows app for fast local video compression and visual trimming. Its single automatic profile selects the best available hardware encoder, reduces file size and keeps visually close quality without exposing codec settings.
@@ -43,11 +41,9 @@ Download from [GitHub Releases](https://github.com/Vlad0s78/Clipora/releases/lat
 - `clipora-win64-setup.exe` — standard installer.
 - `clipora-win64-portable.zip` — extract and run `Clipora.exe`.
 
-FFmpeg, FFprobe and the .NET runtime are bundled. No additional downloads are required.
-
 ## Исходный код / Source
 
-Требуются Windows 11 x64, .NET SDK 10 и PowerShell 7:
+Требуются .NET SDK 10 и PowerShell 7:
 
 ```powershell
 dotnet restore Clipora.sln --locked-mode
