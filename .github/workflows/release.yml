@@ -129,11 +129,7 @@ jobs:
           $tag = "v$env:CLIPORA_VERSION"
           $assets = @(
             'artifacts/release/clipora-win64-portable.zip',
-            'artifacts/release/clipora-win64-setup.exe',
-            'artifacts/release/SHA256SUMS.txt',
-            'artifacts/release/release-manifest.json',
-            'artifacts/release/ffmpeg-source-9b6c8969e05b4f0b29f0f85cd501be6b3e582e6b.zip',
-            'artifacts/release/ffmpeg-build-scripts-2437e7b868da3c11872367b15f3c613b87c24819.zip'
+            'artifacts/release/clipora-win64-setup.exe'
           )
           foreach ($asset in $assets) {
             if (-not (Test-Path -LiteralPath $asset -PathType Leaf)) {

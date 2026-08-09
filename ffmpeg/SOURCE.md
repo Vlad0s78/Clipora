@@ -2,14 +2,9 @@
 
 Clipora packages the unmodified LGPL build identified in [PROVENANCE.json](PROVENANCE.json).
 
-The matching source inputs are attached to each binary release:
+The matching source inputs are available from the pinned upstream commits:
 
-- `ffmpeg-source-9b6c8969e05b4f0b29f0f85cd501be6b3e582e6b.zip`
-- `ffmpeg-build-scripts-2437e7b868da3c11872367b15f3c613b87c24819.zip`
-
-Upstream locations:
-
-- https://github.com/FFmpeg/FFmpeg/tree/9b6c8969e05b4f0b29f0f85cd501be6b3e582e6b
-- https://github.com/BtbN/FFmpeg-Builds/tree/2437e7b868da3c11872367b15f3c613b87c24819
+- https://github.com/FFmpeg/FFmpeg/archive/9b6c8969e05b4f0b29f0f85cd501be6b3e582e6b.zip
+- https://github.com/BtbN/FFmpeg-Builds/archive/2437e7b868da3c11872367b15f3c613b87c24819.zip
 
 The complete LGPL text distributed with the binaries is stored in [LICENSE](LICENSE). Clipora communicates with these executables only through command-line processes and does not link against FFmpeg libraries.

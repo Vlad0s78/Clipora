@@ -107,6 +107,6 @@
     "ffmpegCoreSourceIdentified": true,
     "correspondingSourceComplete": true,
     "evidencePath": "ffmpeg/SOURCE.md",
-    "note": "Exact LGPL binary archive, FFmpeg source commit archive, build scripts commit archive, license and SHA-256 values are recorded for release attachment."
+    "note": "Exact LGPL binary archive, pinned upstream source URLs, license and SHA-256 values are recorded in this repository and included with the application."
   }
 }

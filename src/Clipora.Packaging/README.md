@@ -40,10 +40,7 @@ pwsh -NoProfile -File .\src\Clipora.Packaging\scripts\Build-Packages.ps1
 ```text
 artifacts/release/
 ├── clipora-win64-portable.zip
-├── clipora-win64-setup.exe
-├── SHA256SUMS.txt
-├── release-manifest.json
-└── reports/
+└── clipora-win64-setup.exe
 ```
 
 Portable ZIP содержит self-contained x64-приложение, `manifest.sha256`, marker `portable-data/.clipora-portable` и каталог `licenses/` с MIT License, notices, LGPL, provenance и точным upstream `README.txt` исходной сборки FFmpeg.
@@ -56,7 +53,7 @@ Portable ZIP содержит self-contained x64-приложение, `manifest
 - publish использует `Deterministic`, `ContinuousIntegrationBuild` и стабильный `PathMap`;
 - содержимое ZIP сортируется по ordinal-пути;
 - время каждой ZIP-записи фиксировано через `SOURCE_DATE_EPOCH`;
-- `manifest.sha256` и итоговый `SHA256SUMS.txt` формируются в стабильном порядке.
+- `manifest.sha256` внутри Setup и Portable формируется в стабильном порядке.
 
 Одинаковый SDK, исходники, lock-файлы, FFmpeg-входы и `SOURCE_DATE_EPOCH` дают одинаковый Portable ZIP. Inno Setup фиксируется по версии компилятора в release-policy; сам установщик проверяется по SHA-256, но не объявляется побитово воспроизводимым.
 

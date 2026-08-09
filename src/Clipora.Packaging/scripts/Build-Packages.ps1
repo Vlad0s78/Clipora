@@ -211,21 +211,8 @@ if (-not (Test-Path -LiteralPath $setupPath -PathType Leaf)) {
     throw "Inno Setup не создал ожидаемый файл: $setupPath"
 }
 
-$sourceArchives = @(
-    'ffmpeg-source-9b6c8969e05b4f0b29f0f85cd501be6b3e582e6b.zip',
-    'ffmpeg-build-scripts-2437e7b868da3c11872367b15f3c613b87c24819.zip'
-)
-$sourceAssets = @($sourceArchives | ForEach-Object {
-    $source = Join-Path $repositoryRoot "artifacts\release-inputs\$_"
-    $destination = Join-Path $OutputDirectory $_
-    Copy-Item -LiteralPath $source -Destination $destination -Force
-    $destination
-})
-$assets = @($portablePath, $setupPath) + $sourceAssets
-$checksums = @($assets | Sort-Object | ForEach-Object { "$(Get-Sha256 -LiteralPath $_) *$(Split-Path -Leaf $_)" })
-[System.IO.File]::WriteAllLines((Join-Path $OutputDirectory 'SHA256SUMS.txt'), $checksums, [System.Text.UTF8Encoding]::new($false))
-
-$releaseManifest = [ordered]@{
+$assets = @($portablePath, $setupPath)
+$result = [ordered]@{
     schemaVersion = 1
     version = $Version
     build = $BuildNumber
@@ -238,5 +225,4 @@ $releaseManifest = [ordered]@{
         [ordered]@{ name = $item.Name; size = $item.Length; sha256 = Get-Sha256 -LiteralPath $item.FullName }
     })
 }
-Write-JsonFile -Value $releaseManifest -LiteralPath (Join-Path $OutputDirectory 'release-manifest.json')
-$releaseManifest | ConvertTo-Json -Depth 100
+$result | ConvertTo-Json -Depth 100
