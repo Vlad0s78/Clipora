@@ -1,0 +1,228 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms</value></resheader>
+  <data name="HomeDropTitle.Text" xml:space="preserve"><value>Перетащите видео сюда</value></data>
+  <data name="HomeDropSubtitle.Text" xml:space="preserve"><value>или выберите файл</value></data>
+  <data name="BrowseButtonText.Text" xml:space="preserve"><value>Выбрать файл</value></data>
+  <data name="AnalyzeLoadingTitle.Text" xml:space="preserve"><value>Анализируем видео</value></data>
+  <data name="AnalyzeLoadingDescription.Text" xml:space="preserve"><value>Читаем потоки и свойства медиафайла.</value></data>
+  <data name="ChooseAnotherButtonText.Text" xml:space="preserve"><value>Выбрать другое видео</value></data>
+  <data name="DurationLabel.Text" xml:space="preserve"><value>Длительность</value></data>
+  <data name="FileSizeLabel.Text" xml:space="preserve"><value>Размер файла</value></data>
+  <data name="BitrateLabel.Text" xml:space="preserve"><value>Битрейт</value></data>
+  <data name="VideoCodecLabel.Text" xml:space="preserve"><value>Видеокодек</value></data>
+  <data name="ResolutionLabel.Text" xml:space="preserve"><value>Разрешение</value></data>
+  <data name="FrameRateLabel.Text" xml:space="preserve"><value>Частота кадров</value></data>
+  <data name="AudioLabel.Text" xml:space="preserve"><value>Аудио</value></data>
+  <data name="ColorLabel.Text" xml:space="preserve"><value>Формат пикселей / диапазон</value></data>
+  <data name="TracksLabel.Text" xml:space="preserve"><value>Аудио / дорожки субтитров</value></data>
+  <data name="UnknownValue" xml:space="preserve"><value>Нет данных</value></data>
+  <data name="ResolutionValueFormat" xml:space="preserve"><value>{0} × {1}</value></data>
+  <data name="FrameRateValueFormat" xml:space="preserve"><value>{0:0.##} кадр/с</value></data>
+  <data name="TracksValueFormat" xml:space="preserve"><value>{0} / {1}</value></data>
+  <data name="CodecProfileValueFormat" xml:space="preserve"><value>{0} · {1}</value></data>
+  <data name="SampleRateValueFormat" xml:space="preserve"><value>{0:0.##} кГц</value></data>
+  <data name="AudioValueFormat" xml:space="preserve"><value>{0} · каналов: {1} · {2}</value></data>
+  <data name="ColorValueFormat" xml:space="preserve"><value>{0} · {1}</value></data>
+  <data name="HdrValue" xml:space="preserve"><value>HDR</value></data>
+  <data name="SdrValue" xml:space="preserve"><value>SDR</value></data>
+  <data name="FullColorRangeValue" xml:space="preserve"><value>Полный диапазон</value></data>
+  <data name="LimitedColorRangeValue" xml:space="preserve"><value>Ограниченный диапазон</value></data>
+  <data name="BytesValueFormat" xml:space="preserve"><value>{0:0.##} Б</value></data>
+  <data name="KibibytesValueFormat" xml:space="preserve"><value>{0:0.##} КиБ</value></data>
+  <data name="MebibytesValueFormat" xml:space="preserve"><value>{0:0.##} МиБ</value></data>
+  <data name="GibibytesValueFormat" xml:space="preserve"><value>{0:0.##} ГиБ</value></data>
+  <data name="BitsValueFormat" xml:space="preserve"><value>{0:0.##} бит/с</value></data>
+  <data name="KilobitsValueFormat" xml:space="preserve"><value>{0:0.##} Кбит/с</value></data>
+  <data name="MegabitsValueFormat" xml:space="preserve"><value>{0:0.##} Мбит/с</value></data>
+  <data name="UnsupportedVideoTitle" xml:space="preserve"><value>Формат видео не поддерживается</value></data>
+  <data name="UnsupportedVideoDescription" xml:space="preserve"><value>Выберите файл MP4, MKV или MOV.</value></data>
+  <data name="AnalyzeErrorTitle" xml:space="preserve"><value>Не удалось прочитать видео</value></data>
+  <data name="AnalyzeErrorDescription" xml:space="preserve"><value>Возможно, файл повреждён или использует неподдерживаемый формат медиа.</value></data>
+  <data name="CompressVideoButtonText.Text" xml:space="preserve"><value>Сжать видео</value></data>
+  <data name="BrowseButton.AutomationProperties.Name" xml:space="preserve"><value>Выбрать видео</value></data>
+  <data name="ChooseAnotherButton.AutomationProperties.Name" xml:space="preserve"><value>Выбрать другое видео</value></data>
+  <data name="CompressVideoButton.AutomationProperties.Name" xml:space="preserve"><value>Сжать видео</value></data>
+  <data name="CancelCompressionButton.AutomationProperties.Name" xml:space="preserve"><value>Отменить сжатие</value></data>
+  <data name="RetryCompressionButton.AutomationProperties.Name" xml:space="preserve"><value>Повторить сжатие</value></data>
+  <data name="RetryProcessingButton.AutomationProperties.Name" xml:space="preserve"><value>Повторить текущую операцию</value></data>
+  <data name="BackToVideoButton.AutomationProperties.Name" xml:space="preserve"><value>Вернуться к видео</value></data>
+  <data name="LegacyCompressionProgressTitle.Text" xml:space="preserve"><value>Сжимаем видео</value></data>
+  <data name="CompressionProgress.AutomationProperties.Name" xml:space="preserve"><value>Ход сжатия видео</value></data>
+  <data name="ProgressFpsLabel.Text" xml:space="preserve"><value>Кадры/с</value></data>
+  <data name="ProgressSpeedLabel.Text" xml:space="preserve"><value>Скорость</value></data>
+  <data name="ProgressElapsedLabel.Text" xml:space="preserve"><value>Прошло</value></data>
+  <data name="ProgressEtaLabel.Text" xml:space="preserve"><value>Осталось</value></data>
+  <data name="ProgressSizeLabel.Text" xml:space="preserve"><value>Текущий размер</value></data>
+  <data name="CancelCompressionButtonText.Text" xml:space="preserve"><value>Отменить</value></data>
+  <data name="LegacyCompressionSuccessTitle.Text" xml:space="preserve"><value>Видео сжато</value></data>
+  <data name="LegacyCompressionSuccessDescription.Text" xml:space="preserve"><value>Новая копия сохранена рядом с исходным файлом.</value></data>
+  <data name="OutputPathLabel.Text" xml:space="preserve"><value>Выходной файл</value></data>
+  <data name="LegacyOriginalSizeResultLabel.Text" xml:space="preserve"><value>Исходный размер</value></data>
+  <data name="OutputSizeResultLabel.Text" xml:space="preserve"><value>Размер после сжатия</value></data>
+  <data name="BackToVideoButtonText.Text" xml:space="preserve"><value>Вернуться к видео</value></data>
+  <data name="RetryCompressionButtonText.Text" xml:space="preserve"><value>Повторить</value></data>
+  <data name="CompressionErrorTitle" xml:space="preserve"><value>Не удалось сжать видео</value></data>
+  <data name="CompressionErrorDescription" xml:space="preserve"><value>Исходный файл не изменён. Повторите попытку или выберите другое видео.</value></data>
+  <data name="UnknownProgressValue" xml:space="preserve"><value>—</value></data>
+  <data name="ProgressPercentFormat" xml:space="preserve"><value>{0:0}%</value></data>
+  <data name="ProgressFramesPerSecondFormat" xml:space="preserve"><value>{0:0.#} кадр/с</value></data>
+  <data name="ProgressSpeedFormat" xml:space="preserve"><value>{0:0.##}×</value></data>
+  <data name="CompressionSavingsFormat" xml:space="preserve"><value>Экономия: {0} ({1:0.#}%)</value></data>
+  <data name="CompressionIncreaseFormat" xml:space="preserve"><value>Размер увеличился на {0} ({1:0.#}%)</value></data>
+  <data name="CompressionSizeUnchanged" xml:space="preserve"><value>Размер файла не изменился</value></data>
+  <data name="OpenTrimEditorButtonText.Text" xml:space="preserve"><value>Обрезать видео</value></data>
+  <data name="OpenTrimEditorButton.AutomationProperties.Name" xml:space="preserve"><value>Открыть редактор обрезки</value></data>
+  <data name="CloseTrimEditorButton.AutomationProperties.Name" xml:space="preserve"><value>Вернуться к видео</value></data>
+  <data name="TrimEditorTitle.Text" xml:space="preserve"><value>Выбранный фрагмент</value></data>
+  <data name="TrimTimeline.AutomationProperties.Name" xml:space="preserve"><value>Диапазон обрезки видео</value></data>
+  <data name="TrimTimeline.AutomationProperties.HelpText" xml:space="preserve"><value>Перетаскивайте края диапазона. Стрелки перемещают просмотр, Ctrl со стрелками — начало, Shift со стрелками — конец.</value></data>
+  <data name="TrimTimelineTitle.Text" xml:space="preserve"><value>Таймлайн</value></data>
+  <data name="TrimTimelineSelectedLabel.Text" xml:space="preserve"><value>Выбрано</value></data>
+  <data name="TrimStartLabel.Text" xml:space="preserve"><value>Начало</value></data>
+  <data name="TrimEndLabel.Text" xml:space="preserve"><value>Конец</value></data>
+  <data name="TrimSelectionDurationLabel.Text" xml:space="preserve"><value>Длительность фрагмента</value></data>
+  <data name="TrimAndCompressButtonText.Text" xml:space="preserve"><value>Обрезать и сжать</value></data>
+  <data name="TrimAndCompressButtonHint.Text" xml:space="preserve"><value>Уменьшить размер</value></data>
+  <data name="TrimAndCompressButton.AutomationProperties.Name" xml:space="preserve"><value>Обрезать выбранный фрагмент и сжать его</value></data>
+  <data name="TrimOnlyButtonText.Text" xml:space="preserve"><value>Только обрезать</value></data>
+  <data name="TrimOnlyButtonHint.Text" xml:space="preserve"><value>Без перекодирования</value></data>
+  <data name="TrimOnlyButton.AutomationProperties.Name" xml:space="preserve"><value>Обрезать без сжатия</value></data>
+  <data name="ResetTrimSelectionButtonText.Text" xml:space="preserve"><value>Сбросить</value></data>
+  <data name="ResetTrimSelectionButton.AutomationProperties.Name" xml:space="preserve"><value>Сбросить выбранный диапазон</value></data>
+  <data name="PreviewRewindButton.AutomationProperties.Name" xml:space="preserve"><value>Переместить предпросмотр на пять секунд назад</value></data>
+  <data name="PreviewRewindButton.ToolTipService.ToolTip" xml:space="preserve"><value>Назад на 5 секунд</value></data>
+  <data name="PreviewPlayPauseButton.AutomationProperties.Name" xml:space="preserve"><value>Воспроизвести или приостановить предпросмотр</value></data>
+  <data name="PreviewPlayPauseButton.ToolTipService.ToolTip" xml:space="preserve"><value>Воспроизвести или приостановить</value></data>
+  <data name="PreviewForwardButton.AutomationProperties.Name" xml:space="preserve"><value>Переместить предпросмотр на пять секунд вперёд</value></data>
+  <data name="PreviewForwardButton.ToolTipService.ToolTip" xml:space="preserve"><value>Вперёд на 5 секунд</value></data>
+  <data name="CancelProcessingButtonText.Text" xml:space="preserve"><value>Отменить</value></data>
+  <data name="CancelProcessingButton.AutomationProperties.Name" xml:space="preserve"><value>Отменить текущую операцию</value></data>
+  <data name="OperationCompressionProgressTitle" xml:space="preserve"><value>Сжимаем видео</value></data>
+  <data name="OperationCompressionProgressAutomationName" xml:space="preserve"><value>Ход сжатия видео</value></data>
+  <data name="OperationCompressionSuccessTitle" xml:space="preserve"><value>Видео сжато</value></data>
+  <data name="OperationCompressionSuccessDescription" xml:space="preserve"><value>Новая копия сохранена рядом с исходным файлом.</value></data>
+  <data name="OperationTrimCompressProgressTitle" xml:space="preserve"><value>Обрезаем и сжимаем видео</value></data>
+  <data name="OperationTrimCompressProgressAutomationName" xml:space="preserve"><value>Ход обрезки и сжатия видео</value></data>
+  <data name="OperationTrimCompressSuccessTitle" xml:space="preserve"><value>Фрагмент обрезан и сжат</value></data>
+  <data name="OperationTrimCompressSuccessDescription" xml:space="preserve"><value>Выбранный фрагмент сохранён новой сжатой копией.</value></data>
+  <data name="OperationTrimOnlyProgressTitle" xml:space="preserve"><value>Обрезаем видео</value></data>
+  <data name="OperationTrimOnlyProgressAutomationName" xml:space="preserve"><value>Ход обрезки видео</value></data>
+  <data name="OperationTrimOnlySuccessTitle" xml:space="preserve"><value>Видео обрезано</value></data>
+  <data name="OperationTrimOnlySuccessDescription" xml:space="preserve"><value>Выбранный фрагмент сохранён новой копией без перекодирования.</value></data>
+  <data name="ResultOriginalSizeLabel" xml:space="preserve"><value>Исходный файл</value></data>
+  <data name="ResultCompressedSizeLabel" xml:space="preserve"><value>После сжатия</value></data>
+  <data name="ResultTrimmedSizeLabel" xml:space="preserve"><value>Новая копия</value></data>
+  <data name="TrimSourceUnchangedResult" xml:space="preserve"><value>Исходное видео не изменено</value></data>
+  <data name="TrimCompressErrorTitle" xml:space="preserve"><value>Не удалось обрезать и сжать видео</value></data>
+  <data name="TrimCompressErrorDescription" xml:space="preserve"><value>Исходный файл не изменён. Проверьте диапазон и повторите попытку.</value></data>
+  <data name="TrimOnlyErrorTitle" xml:space="preserve"><value>Не удалось обрезать видео</value></data>
+  <data name="TrimOnlyErrorDescription" xml:space="preserve"><value>Исходный файл не изменён. Проверьте диапазон и повторите попытку.</value></data>
+  <data name="PreviewUnavailableWarning" xml:space="preserve"><value>Предпросмотр недоступен для этого формата. Диапазон и операции обрезки продолжают работать.</value></data>
+  <data name="TrimDurationResultFormat" xml:space="preserve"><value>Фактическая длительность: {0}{1} (выбрано {2})</value></data>
+  <data name="TrimDurationResultUnavailableFormat" xml:space="preserve"><value>Выбрано: {0} · исходное видео не изменено</value></data>
+  <data name="TitleBarSettingsButton.AutomationProperties.Name" xml:space="preserve"><value>Открыть настройки</value></data>
+  <data name="TitleBarSettingsButton.ToolTipService.ToolTip" xml:space="preserve"><value>Настройки</value></data>
+  <data name="TitleBarAboutButton.AutomationProperties.Name" xml:space="preserve"><value>Открыть сведения о программе</value></data>
+  <data name="TitleBarAboutButton.ToolTipService.ToolTip" xml:space="preserve"><value>О программе</value></data>
+  <data name="SettingsBackButton.AutomationProperties.Name" xml:space="preserve"><value>Вернуться к видео</value></data>
+  <data name="SettingsBackButton.ToolTipService.ToolTip" xml:space="preserve"><value>Назад</value></data>
+  <data name="SettingsBackButtonText.Text" xml:space="preserve"><value>Назад</value></data>
+  <data name="SettingsTitle.Text" xml:space="preserve"><value>Настройки</value></data>
+  <data name="SettingsDescription.Text" xml:space="preserve"><value>Параметры интерфейса, сохранения, управления и технического журнала.</value></data>
+  <data name="SettingsLanguageLabel.Text" xml:space="preserve"><value>Язык</value></data>
+  <data name="SettingsLanguageDescription.Text" xml:space="preserve"><value>Выберите язык интерфейса Clipora.</value></data>
+  <data name="SettingsLanguageComboBox.AutomationProperties.Name" xml:space="preserve"><value>Язык интерфейса</value></data>
+  <data name="SettingsLanguageRussianItem.Content" xml:space="preserve"><value>Русский</value></data>
+  <data name="SettingsLanguageEnglishItem.Content" xml:space="preserve"><value>English</value></data>
+  <data name="SettingsRestartHint.Text" xml:space="preserve"><value>Новый язык будет применён после перезапуска Clipora.</value></data>
+  <data name="SettingsOutputHeading.Text" xml:space="preserve"><value>Папка результата</value></data>
+  <data name="SettingsOutputDescription.Text" xml:space="preserve"><value>Исходное видео всегда остаётся без изменений.</value></data>
+  <data name="SettingsOutputModeComboBox.AutomationProperties.Name" xml:space="preserve"><value>Способ выбора папки результата</value></data>
+  <data name="SettingsOutputSameFolderItem.Content" xml:space="preserve"><value>Рядом с исходным видео</value></data>
+  <data name="SettingsOutputCustomFolderItem.Content" xml:space="preserve"><value>Всегда в выбранную папку</value></data>
+  <data name="SettingsOutputAskItem.Content" xml:space="preserve"><value>Спрашивать перед каждой операцией</value></data>
+  <data name="SettingsCustomFolderPath.AutomationProperties.Name" xml:space="preserve"><value>Выбранная папка результата</value></data>
+  <data name="SettingsChooseFolderButton.AutomationProperties.Name" xml:space="preserve"><value>Выбрать папку результата</value></data>
+  <data name="SettingsChooseFolderButton.ToolTipService.ToolTip" xml:space="preserve"><value>Открыть выбор папки</value></data>
+  <data name="SettingsChooseFolderButtonText.Text" xml:space="preserve"><value>Выбрать папку</value></data>
+  <data name="SettingsTechnicalLogHeading.Text" xml:space="preserve"><value>Технический журнал</value></data>
+  <data name="SettingsTechnicalLogDescription.Text" xml:space="preserve"><value>Журнал помогает проверить работу приложения и FFmpeg. Запись журнала не отключается.</value></data>
+  <data name="SettingsTechnicalLogCheckBox.AutomationProperties.Name" xml:space="preserve"><value>Показывать доступ к техническому журналу</value></data>
+  <data name="SettingsTechnicalLogCheckBoxText.Text" xml:space="preserve"><value>Показывать путь и кнопку открытия журнала</value></data>
+  <data name="SettingsLogFolderLabel.Text" xml:space="preserve"><value>Папка журналов</value></data>
+  <data name="SettingsOpenLogsButton.AutomationProperties.Name" xml:space="preserve"><value>Открыть папку технических журналов</value></data>
+  <data name="SettingsOpenLogsButton.ToolTipService.ToolTip" xml:space="preserve"><value>Открыть папку в Проводнике</value></data>
+  <data name="SettingsOpenLogsButtonText.Text" xml:space="preserve"><value>Открыть папку</value></data>
+  <data name="SettingsShortcutsHeading.Text" xml:space="preserve"><value>Горячие клавиши</value></data>
+  <data name="SettingsShortcutsDescription.Text" xml:space="preserve"><value>Настройте управление предпросмотром и границами выбранного фрагмента.</value></data>
+  <data name="SettingsRestoreShortcutsButton.AutomationProperties.Name" xml:space="preserve"><value>Восстановить горячие клавиши по умолчанию</value></data>
+  <data name="SettingsRestoreShortcutsButton.AutomationProperties.HelpText" xml:space="preserve"><value>Вернуть сочетания Пробел, I и O.</value></data>
+  <data name="SettingsRestoreShortcutsButton.ToolTipService.ToolTip" xml:space="preserve"><value>Вернуть сочетания по умолчанию</value></data>
+  <data name="SettingsRestoreShortcutsButtonText.Text" xml:space="preserve"><value>По умолчанию</value></data>
+  <data name="SettingsShortcutPlayPauseLabel.Text" xml:space="preserve"><value>Воспроизведение / пауза</value></data>
+  <data name="SettingsShortcutPlayPauseDescription.Text" xml:space="preserve"><value>Запустить или приостановить предпросмотр</value></data>
+  <data name="SettingsShortcutPlayPauseButton.AutomationProperties.Name" xml:space="preserve"><value>Изменить клавишу воспроизведения и паузы</value></data>
+  <data name="SettingsShortcutPlayPauseButton.AutomationProperties.HelpText" xml:space="preserve"><value>Нажмите кнопку, затем задайте новое сочетание клавиш.</value></data>
+  <data name="SettingsShortcutSetStartLabel.Text" xml:space="preserve"><value>Установить начало</value></data>
+  <data name="SettingsShortcutSetStartDescription.Text" xml:space="preserve"><value>Переместить начало фрагмента к текущей позиции</value></data>
+  <data name="SettingsShortcutSetStartButton.AutomationProperties.Name" xml:space="preserve"><value>Изменить клавишу установки начала</value></data>
+  <data name="SettingsShortcutSetStartButton.AutomationProperties.HelpText" xml:space="preserve"><value>Нажмите кнопку, затем задайте новое сочетание клавиш.</value></data>
+  <data name="SettingsShortcutSetEndLabel.Text" xml:space="preserve"><value>Установить конец</value></data>
+  <data name="SettingsShortcutSetEndDescription.Text" xml:space="preserve"><value>Переместить конец фрагмента к текущей позиции</value></data>
+  <data name="SettingsShortcutSetEndButton.AutomationProperties.Name" xml:space="preserve"><value>Изменить клавишу установки конца</value></data>
+  <data name="SettingsShortcutSetEndButton.AutomationProperties.HelpText" xml:space="preserve"><value>Нажмите кнопку, затем задайте новое сочетание клавиш.</value></data>
+  <data name="SettingsShortcutRecorderHint.Text" xml:space="preserve"><value>Нажмите кнопку сочетания, затем новое сочетание. Esc отменяет запись.</value></data>
+  <data name="SettingsSaveButton.AutomationProperties.Name" xml:space="preserve"><value>Сохранить настройки</value></data>
+  <data name="SettingsSaveButtonText.Text" xml:space="preserve"><value>Сохранить</value></data>
+  <data name="SettingsFolderPickerError" xml:space="preserve"><value>Не удалось открыть выбор папки.</value></data>
+  <data name="SettingsCustomFolderRequired" xml:space="preserve"><value>Выберите существующую папку.</value></data>
+  <data name="SettingsNoCustomFolder" xml:space="preserve"><value>Папка пока не выбрана</value></data>
+  <data name="SettingsSavedMessage" xml:space="preserve"><value>Настройки сохранены.</value></data>
+  <data name="SettingsSaveError" xml:space="preserve"><value>Не удалось сохранить настройки.</value></data>
+  <data name="SettingsLogFolderOpenError" xml:space="preserve"><value>Не удалось открыть папку журналов.</value></data>
+  <data name="SettingsShortcutRecordingButton" xml:space="preserve"><value>Нажмите сочетание…</value></data>
+  <data name="SettingsShortcutRecordingPrompt" xml:space="preserve"><value>Ожидание сочетания. Нажмите основную клавишу; Esc отменяет запись.</value></data>
+  <data name="SettingsShortcutDefaultsRestored" xml:space="preserve"><value>Сочетания по умолчанию восстановлены.</value></data>
+  <data name="SettingsShortcutApplyError" xml:space="preserve"><value>Сочетания сохранены, но применить их сейчас не удалось.</value></data>
+  <data name="SettingsShortcutMissingError" xml:space="preserve"><value>Задайте сочетание для каждой команды.</value></data>
+  <data name="SettingsShortcutUnsupportedKeyError" xml:space="preserve"><value>Эта клавиша не поддерживается.</value></data>
+  <data name="SettingsShortcutUnassignableKeyError" xml:space="preserve"><value>Эту клавишу нельзя назначить для команды обрезки.</value></data>
+  <data name="SettingsShortcutUnsupportedModifiersError" xml:space="preserve"><value>Это сочетание содержит неподдерживаемые модификаторы.</value></data>
+  <data name="SettingsShortcutReservedModifierError" xml:space="preserve"><value>Сочетания с клавишей Windows зарезервированы системой.</value></data>
+  <data name="SettingsShortcutReservedGestureError" xml:space="preserve"><value>Это сочетание зарезервировано системой.</value></data>
+  <data name="SettingsShortcutDuplicateError" xml:space="preserve"><value>Для каждой команды задайте уникальное сочетание.</value></data>
+  <data name="OutputFolderErrorTitle" xml:space="preserve"><value>Папка результата недоступна</value></data>
+  <data name="OutputFolderErrorDescription" xml:space="preserve"><value>Откройте настройки и выберите существующую папку, затем повторите операцию.</value></data>
+  <data name="AboutBackButton.AutomationProperties.Name" xml:space="preserve"><value>Вернуться к видео</value></data>
+  <data name="AboutBackButton.ToolTipService.ToolTip" xml:space="preserve"><value>Назад</value></data>
+  <data name="AboutBackButtonText.Text" xml:space="preserve"><value>Назад</value></data>
+  <data name="AboutLogo.AutomationProperties.Name" xml:space="preserve"><value>Логотип Clipora</value></data>
+  <data name="AboutTitle.Text" xml:space="preserve"><value>Clipora</value></data>
+  <data name="AboutSubtitle.Text" xml:space="preserve"><value>Обрезай. Сжимай. Готово.</value></data>
+  <data name="AboutVersionLabel.Text" xml:space="preserve"><value>Версия</value></data>
+  <data name="AboutBuildLabel.Text" xml:space="preserve"><value>Сборка</value></data>
+  <data name="AboutDeveloperLabel.Text" xml:space="preserve"><value>Разработчик</value></data>
+  <data name="AboutDeveloperValueFormat" xml:space="preserve"><value>by {0}</value></data>
+  <data name="AboutFFmpegLabel.Text" xml:space="preserve"><value>Встроенный FFmpeg</value></data>
+  <data name="AboutFFmpegLoading" xml:space="preserve"><value>Проверяем версию…</value></data>
+  <data name="AboutFFmpegUnavailable" xml:space="preserve"><value>Версия недоступна</value></data>
+  <data name="AboutLicensesHeading.Text" xml:space="preserve"><value>Лицензии</value></data>
+  <data name="AboutLicensesText.Text" xml:space="preserve"><value>Clipora распространяется по лицензии MIT. Встроенная сборка FFmpeg является отдельным компонентом и распространяется по GNU GPL версии 3 или более поздней.</value></data>
+  <data name="AboutGitHubButton.AutomationProperties.Name" xml:space="preserve"><value>Открыть репозиторий Clipora на GitHub</value></data>
+  <data name="AboutGitHubButton.ToolTipService.ToolTip" xml:space="preserve"><value>GitHub проекта</value></data>
+  <data name="AboutGitHubButtonText.Text" xml:space="preserve"><value>GitHub</value></data>
+  <data name="AboutFFmpegWebsiteButton.AutomationProperties.Name" xml:space="preserve"><value>Открыть сайт FFmpeg</value></data>
+  <data name="AboutFFmpegWebsiteButton.ToolTipService.ToolTip" xml:space="preserve"><value>Официальный сайт FFmpeg</value></data>
+  <data name="AboutFFmpegWebsiteButtonText.Text" xml:space="preserve"><value>FFmpeg</value></data>
+  <data name="SettingsExplorerHeading.Text" xml:space="preserve"><value>Проводник</value></data>
+  <data name="SettingsExplorerDescription.Text" xml:space="preserve"><value>Добавьте действия Clipora в контекстное меню файлов Windows 11.</value></data>
+  <data name="SettingsExplorerCheckBox.AutomationProperties.Name" xml:space="preserve"><value>Включить интеграцию с Проводником</value></data>
+  <data name="SettingsExplorerCheckBoxText.Text" xml:space="preserve"><value>Показывать «Открыть в Clipora» и «Сжать с помощью Clipora» для поддерживаемых видео</value></data>
+  <data name="SettingsPortableExplorerNotice.Text" xml:space="preserve"><value>В Portable-режиме интеграция с Проводником недоступна, поэтому приложение не оставляет записей в реестре.</value></data>
+</root>
+
+

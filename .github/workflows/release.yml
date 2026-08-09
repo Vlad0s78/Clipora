@@ -1,0 +1,143 @@
+name: Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: Validate the release without creating binary packages or a GitHub Release
+        required: true
+        type: boolean
+        default: true
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  DOTNET_CLI_TELEMETRY_OPTOUT: 1
+  DOTNET_NOLOGO: true
+  SOURCE_DATE_EPOCH: 946684800
+
+jobs:
+  validate:
+    name: Validate release inputs
+    runs-on: windows-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Setup .NET from global.json
+        uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6.0.0
+        with:
+          global-json-file: global.json
+
+      - name: Install Inno Setup
+        run: choco install innosetup --yes --no-progress
+
+      - name: Restore locked dependencies
+        run: dotnet restore Clipora.sln --locked-mode
+
+      - name: Audit NuGet dependencies
+        run: dotnet list Clipora.sln package --vulnerable --include-transitive --no-restore
+
+      - name: Enforce policy gate
+        shell: pwsh
+        run: ./src/Clipora.Packaging/scripts/Test-ReleaseInputs.ps1 -Mode Policy
+
+      - name: Acquire and verify pinned FFmpeg inputs
+        shell: pwsh
+        run: ./src/Clipora.Packaging/scripts/Get-VerifiedMediaTools.ps1
+
+      - name: Build
+        run: dotnet build Clipora.sln --configuration Release --no-restore -p:Platform=x64
+
+      - name: Test
+        run: dotnet test Clipora.sln --configuration Release --no-build --no-restore --logger "trx"
+
+      - name: Test packaging infrastructure
+        shell: pwsh
+        run: ./src/Clipora.Packaging/tests/Test-Packaging.ps1
+
+      - name: Produce dry-run plan
+        shell: pwsh
+        run: ./src/Clipora.Packaging/scripts/Build-Packages.ps1 -DryRun
+
+      - name: Upload dry-run reports
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: release-dry-run
+          path: artifacts/release/reports/
+          if-no-files-found: error
+          retention-days: 14
+
+  draft-release:
+    name: Build gated draft release
+    if: ${{ inputs.dry_run == false }}
+    needs: validate
+    runs-on: windows-latest
+    timeout-minutes: 60
+    permissions:
+      contents: write
+
+    steps:
+      - name: Require main branch
+        shell: pwsh
+        run: |
+          if ($env:GITHUB_REF -ne 'refs/heads/main') {
+            throw 'Binary draft releases are allowed only from refs/heads/main.'
+          }
+
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Setup .NET from global.json
+        uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6.0.0
+        with:
+          global-json-file: global.json
+
+      - name: Install Inno Setup
+        run: choco install innosetup --yes --no-progress
+
+      - name: Restore locked dependencies
+        run: dotnet restore Clipora.sln --locked-mode
+
+      - name: Enforce policy gate before download
+        shell: pwsh
+        run: ./src/Clipora.Packaging/scripts/Test-ReleaseInputs.ps1 -Mode Policy
+
+      - name: Acquire and verify pinned FFmpeg inputs
+        shell: pwsh
+        run: ./src/Clipora.Packaging/scripts/Get-VerifiedMediaTools.ps1
+
+      - name: Build Setup and Portable
+        shell: pwsh
+        run: ./src/Clipora.Packaging/scripts/Build-Packages.ps1
+
+      - name: Create draft GitHub Release
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          [xml]$props = Get-Content -LiteralPath 'Directory.Build.props' -Raw
+          $env:CLIPORA_VERSION = [string]$props.Project.PropertyGroup.VersionPrefix
+          $env:CLIPORA_BUILD = [string]$props.Project.PropertyGroup.CliporaBuild
+          $tag = "v$env:CLIPORA_VERSION"
+          $assets = @(
+            'artifacts/release/clipora-win64-portable.zip',
+            'artifacts/release/clipora-win64-setup.exe',
+            'artifacts/release/SHA256SUMS.txt',
+            'artifacts/release/release-manifest.json',
+            'artifacts/release/ffmpeg-source-9b6c8969e05b4f0b29f0f85cd501be6b3e582e6b.zip',
+            'artifacts/release/ffmpeg-build-scripts-2437e7b868da3c11872367b15f3c613b87c24819.zip'
+          )
+          foreach ($asset in $assets) {
+            if (-not (Test-Path -LiteralPath $asset -PathType Leaf)) {
+              throw "Missing release asset: $asset"
+            }
+          }
+          gh release create $tag @assets --target $env:GITHUB_SHA --title "Clipora $env:CLIPORA_VERSION" --generate-notes --draft

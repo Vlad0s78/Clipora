@@ -1,0 +1,112 @@
+{
+  "schemaVersion": 2,
+  "verifiedOn": "2026-08-09",
+  "provider": {
+    "name": "BtbN FFmpeg Builds",
+    "repositoryUrl": "https://github.com/BtbN/FFmpeg-Builds",
+    "buildCommit": "2437e7b868da3c11872367b15f3c613b87c24819",
+    "buildCommitUrl": "https://github.com/BtbN/FFmpeg-Builds/commit/2437e7b868da3c11872367b15f3c613b87c24819"
+  },
+  "archive": {
+    "fileName": "ffmpeg-n8.1.2-34-g9b6c8969e0-win64-lgpl-8.1.zip",
+    "url": "https://github.com/BtbN/FFmpeg-Builds/releases/download/autobuild-2026-08-09-13-03/ffmpeg-n8.1.2-34-g9b6c8969e0-win64-lgpl-8.1.zip",
+    "releaseTag": "autobuild-2026-08-09-13-03",
+    "sha256": "6B4EDFF47F121D2ED218B1B19D17F67AED08F9F1C9CBCEE576FD0548A748C412"
+  },
+  "package": {
+    "versionLabel": "n8.1.2-34-g9b6c8969e0-20260809",
+    "architecture": "x86-64",
+    "linkage": "static executables used as separate child processes",
+    "licenseExpression": "LGPL-3.0-or-later",
+    "licensePathInArchive": "ffmpeg-n8.1.2-34-g9b6c8969e0-win64-lgpl-8.1/LICENSE.txt",
+    "licenseSha256": "DA7EABB7BAFDF7D3AE5E9F223AA5BDC1EECE45AC569DC21B3B037520B4464768",
+    "providerReadmeUrl": "https://raw.githubusercontent.com/BtbN/FFmpeg-Builds/2437e7b868da3c11872367b15f3c613b87c24819/README.md",
+    "providerReadmeSha256": "1ED4437797363166CB9D04B8342987BAB307874E2CE238B78BEE585D963D92E0"
+  },
+  "binaries": [
+    {
+      "name": "ffmpeg.exe",
+      "pathInArchive": "ffmpeg-n8.1.2-34-g9b6c8969e0-win64-lgpl-8.1/bin/ffmpeg.exe",
+      "repositoryInputPath": "ffmpeg/ffmpeg.exe",
+      "size": 113768448,
+      "sha256": "014876A2FA881DA5493EAB66AE948DF6EFC007B43AC3C6B3AA40E4B567FA7D98"
+    },
+    {
+      "name": "ffprobe.exe",
+      "pathInArchive": "ffmpeg-n8.1.2-34-g9b6c8969e0-win64-lgpl-8.1/bin/ffprobe.exe",
+      "repositoryInputPath": "ffmpeg/ffprobe.exe",
+      "size": 113562624,
+      "sha256": "9E5BFB787E3BC09136DFF3373CB92982845FC7609FC76D36955757A100B6623C"
+    }
+  ],
+  "sourceIdentification": {
+    "ffmpegCommit": "9b6c8969e05b4f0b29f0f85cd501be6b3e582e6b",
+    "ffmpegCommitUrl": "https://github.com/FFmpeg/FFmpeg/commit/9b6c8969e05b4f0b29f0f85cd501be6b3e582e6b",
+    "ffmpegSourceArchive": "ffmpeg-source-9b6c8969e05b4f0b29f0f85cd501be6b3e582e6b.zip",
+    "ffmpegSourceArchiveSha256": "696DC2DA356A4D92F8A5D113E426E105896B66915EA54FE1724DD9029FF66FC0",
+    "buildScriptsArchive": "ffmpeg-build-scripts-2437e7b868da3c11872367b15f3c613b87c24819.zip",
+    "buildScriptsArchiveSha256": "1055D03392E823E2D62C08F2924EC0489B6C82EC2DEBB7191309C5AE7A5070F4",
+    "ffmpegSourceArchiveUrl": "https://github.com/FFmpeg/FFmpeg/archive/9b6c8969e05b4f0b29f0f85cd501be6b3e582e6b.zip",
+    "buildScriptsArchiveUrl": "https://github.com/BtbN/FFmpeg-Builds/archive/2437e7b868da3c11872367b15f3c613b87c24819.zip"
+  },
+  "buildConfiguration": "--prefix=/ffbuild/prefix --pkg-config-flags=--static --pkg-config=pkg-config --cross-prefix=x86_64-w64-mingw32- --arch=x86_64 --target-os=mingw32 --enable-version3 --disable-debug --disable-w32threads --enable-pthreads --enable-iconv --enable-zlib --enable-libxml2 --enable-libvmaf --enable-fontconfig --enable-libharfbuzz --enable-libfreetype --enable-libfribidi --enable-vulkan --enable-libshaderc --enable-libvorbis --disable-libxcb --disable-xlib --disable-libpulse --enable-gmp --enable-lzma --enable-liblcevc-dec --enable-opencl --enable-amf --enable-libaom --enable-libaribb24 --disable-avisynth --enable-chromaprint --enable-libdav1d --disable-libdavs2 --disable-libdvdread --disable-libdvdnav --disable-libfdk-aac --enable-ffnvcodec --enable-cuda-llvm --disable-frei0r --enable-libgme --enable-libkvazaar --enable-libaribcaption --enable-libass --enable-libbluray --enable-libjxl --enable-libmp3lame --enable-libopus --enable-libplacebo --enable-librist --enable-libssh --enable-libtheora --enable-libvpx --enable-libwebp --enable-libzmq --enable-lv2 --enable-libvpl --enable-openal --enable-liboapv --enable-libopencore-amrnb --enable-libopencore-amrwb --enable-libopenh264 --enable-libopenjpeg --enable-libopenmpt --enable-librav1e --disable-librubberband --enable-schannel --enable-sdl2 --enable-libsnappy --enable-libsoxr --enable-libsrt --enable-libsvtav1 --enable-libtwolame --enable-libuavs3d --disable-libdrm --enable-vaapi --disable-libvidstab --enable-libvvenc --disable-whisper --disable-libx264 --disable-libx265 --disable-libxavs2 --disable-libxvid --enable-libzimg --enable-libzvbi --extra-cflags=-DLIBTWOLAME_STATIC --extra-cxxflags= --extra-libs=-lgomp --extra-ldflags=-pthread --extra-ldexeflags= --cc=x86_64-w64-mingw32-gcc --cxx=x86_64-w64-mingw32-g++ --ar=x86_64-w64-mingw32-gcc-ar --ranlib=x86_64-w64-mingw32-gcc-ranlib --nm=x86_64-w64-mingw32-gcc-nm --extra-version=20260809",
+  "enabledExternalLibraries": [
+    "libaom",
+    "libaribb24",
+    "libaribcaption",
+    "libass",
+    "libbluray",
+    "libdav1d",
+    "libfreetype",
+    "libfribidi",
+    "libgme",
+    "libharfbuzz",
+    "libjxl",
+    "libkvazaar",
+    "liblcevc-dec",
+    "libmp3lame",
+    "liboapv",
+    "libopencore-amrnb",
+    "libopencore-amrwb",
+    "libopenh264",
+    "libopenjpeg",
+    "libopenmpt",
+    "libopus",
+    "libplacebo",
+    "librav1e",
+    "librist",
+    "libshaderc",
+    "libsnappy",
+    "libsoxr",
+    "libsrt",
+    "libssh",
+    "libsvtav1",
+    "libtheora",
+    "libtwolame",
+    "libuavs3d",
+    "libvmaf",
+    "libvorbis",
+    "libvpl",
+    "libvpx",
+    "libvvenc",
+    "libwebp",
+    "libxml2",
+    "libzimg",
+    "libzmq",
+    "libzvbi"
+  ],
+  "verification": {
+    "archiveChecksumMatchedPublishedChecksum": true,
+    "workspaceBinariesMatchArchiveBySha256AndSize": true,
+    "workspaceLicenseMatchesArchiveBySha256AndSize": true,
+    "realHevcNvencEncodeAndDecode": true,
+    "realLibsvtav1EncodeAndDecode": true
+  },
+  "distributionReview": {
+    "binaryIdentityVerified": true,
+    "ffmpegCoreSourceIdentified": true,
+    "correspondingSourceComplete": true,
+    "evidencePath": "ffmpeg/SOURCE.md",
+    "note": "Exact LGPL binary archive, FFmpeg source commit archive, build scripts commit archive, license and SHA-256 values are recorded for release attachment."
+  }
+}

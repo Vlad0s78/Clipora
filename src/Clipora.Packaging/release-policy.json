@@ -1,0 +1,42 @@
+{
+  "schemaVersion": 1,
+  "target": {
+    "runtimeIdentifier": "win-x64",
+    "framework": "net10.0-windows10.0.26100.0",
+    "minimumOs": "10.0.22000.0"
+  },
+  "toolchain": {
+    "dotnetSdk": "10.0.302",
+    "innoSetup": "6.x",
+    "sourceDateEpoch": 946684800
+  },
+  "licenseInventory": {
+    "complete": true,
+    "evidencePath": "src/Clipora.Packaging/evidence/license-inventory.md",
+    "note": "Runtime license inventory completed for the pinned LGPL FFmpeg package and direct application dependencies."
+  },
+  "signing": {
+    "reviewComplete": true,
+    "mode": "unsigned-alpha-with-sha256",
+    "evidencePath": "src/Clipora.Packaging/evidence/unsigned-alpha-policy.md",
+    "note": "Unsigned alpha policy explicitly approved; GitHub Release checksums are mandatory."
+  },
+  "cleanWindowsAcceptance": {
+    "complete": true,
+    "evidencePath": "src/Clipora.Packaging/evidence/local-package-acceptance.md",
+    "requiredChecks": [
+      "setup-install",
+      "setup-launch",
+      "setup-uninstall",
+      "portable-launch",
+      "rollback",
+      "no-test-media-or-local-state"
+    ],
+    "note": "Setup and Portable passed real local Windows acceptance; GitHub release workflow repeats validation on a fresh hosted Windows runner."
+  },
+  "portableDataIsolation": {
+    "complete": true,
+    "evidencePath": "src/Clipora.Packaging/evidence/portable-data-isolation.md",
+    "note": "Marker-based routing and registry blocking are implemented and verified; clean-Windows package acceptance remains a separate gate."
+  }
+}

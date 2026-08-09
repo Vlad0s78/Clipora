@@ -1,0 +1,16 @@
+{
+  "version": 1,
+  "dependencies": {
+    "net10.0-windows10.0.26100": {
+      "clipora.core": {
+        "type": "Project"
+      },
+      "clipora.ffmpeg": {
+        "type": "Project",
+        "dependencies": {
+          "Clipora.Core": "[0.1.0, )"
+        }
+      }
+    }
+  }
+}

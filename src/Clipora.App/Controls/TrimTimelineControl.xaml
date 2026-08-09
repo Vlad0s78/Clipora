@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<UserControl
+    x:Class="Clipora.App.Controls.TrimTimelineControl"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    MinHeight="140"
+    MaxHeight="190"
+    IsTabStop="True"
+    UseSystemFocusVisuals="True"
+    FocusVisualPrimaryBrush="{StaticResource CliporaCyanBrush}"
+    FocusVisualPrimaryThickness="2"
+    KeyDown="OnKeyDown"
+    Loaded="OnLoaded"
+    Unloaded="OnUnloaded"
+    mc:Ignorable="d">
+
+    <Grid RowSpacing="6">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="34" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <Canvas
+            x:Name="RulerCanvas"
+            MinHeight="34"
+            IsHitTestVisible="False" />
+
+        <Border
+            Grid.Row="1"
+            MinHeight="110"
+            Background="#0D1426"
+            BorderBrush="{StaticResource CliporaBorderBrush}"
+            BorderThickness="1"
+            CornerRadius="12">
+            <Grid>
+                <Grid x:Name="ThumbnailGrid" />
+
+                <Canvas
+                    x:Name="OverlayCanvas"
+                    Background="Transparent"
+                    PointerCanceled="OnPointerCanceled"
+                    PointerCaptureLost="OnPointerCaptureLost"
+                    PointerMoved="OnPointerMoved"
+                    PointerPressed="OnPointerPressed"
+                    PointerReleased="OnPointerReleased">
+                    <Rectangle
+                        x:Name="StartShade"
+                        Canvas.ZIndex="1"
+                        Fill="#B80B1020"
+                        IsHitTestVisible="False" />
+                    <Rectangle
+                        x:Name="EndShade"
+                        Canvas.ZIndex="1"
+                        Fill="#B80B1020"
+                        IsHitTestVisible="False" />
+                    <Border
+                        x:Name="SelectionBorder"
+                        Canvas.ZIndex="2"
+                        BorderThickness="2"
+                        CornerRadius="8"
+                        IsHitTestVisible="False">
+                        <Border.Background>
+                            <LinearGradientBrush StartPoint="0,0.5" EndPoint="1,0.5">
+                                <GradientStop Offset="0" Color="#147A4DFF" />
+                                <GradientStop Offset="1" Color="#1439E6FF" />
+                            </LinearGradientBrush>
+                        </Border.Background>
+                        <Border.BorderBrush>
+                            <LinearGradientBrush StartPoint="0,0.5" EndPoint="1,0.5">
+                                <GradientStop Offset="0" Color="#C93CFF" />
+                                <GradientStop Offset="0.48" Color="#7A4DFF" />
+                                <GradientStop Offset="1" Color="#39E6FF" />
+                            </LinearGradientBrush>
+                        </Border.BorderBrush>
+                    </Border>
+                    <Border
+                        x:Name="StartHandle"
+                        Width="18"
+                        Canvas.ZIndex="4"
+                        Background="#C93CFF"
+                        BorderBrush="#80FFFFFF"
+                        BorderThickness="1"
+                        CornerRadius="8,3,3,8"
+                        IsHitTestVisible="False">
+                        <FontIcon
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center"
+                            FontSize="10"
+                            Foreground="White"
+                            Glyph="&#xE76B;" />
+                    </Border>
+                    <Border
+                        x:Name="EndHandle"
+                        Width="18"
+                        Canvas.ZIndex="4"
+                        Background="#39E6FF"
+                        BorderBrush="#80FFFFFF"
+                        BorderThickness="1"
+                        CornerRadius="3,8,8,3"
+                        IsHitTestVisible="False">
+                        <FontIcon
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center"
+                            FontSize="10"
+                            Foreground="#0B1020"
+                            Glyph="&#xE76C;" />
+                    </Border>
+                    <Rectangle
+                        x:Name="Playhead"
+                        Width="2"
+                        Canvas.ZIndex="6"
+                        Fill="White"
+                        IsHitTestVisible="False" />
+                    <Border
+                        x:Name="PlayheadKnob"
+                        Width="11"
+                        Height="11"
+                        Canvas.ZIndex="7"
+                        Background="White"
+                        BorderBrush="#990B1020"
+                        BorderThickness="1"
+                        CornerRadius="2"
+                        IsHitTestVisible="False" />
+                </Canvas>
+            </Grid>
+        </Border>
+    </Grid>
+</UserControl>

@@ -1,0 +1,356 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Page
+    x:Class="Clipora.App.SettingsPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    Background="{StaticResource CliporaCanvasBrush}"
+    Loaded="OnLoaded"
+    Unloaded="OnUnloaded"
+    mc:Ignorable="d">
+
+    <Page.Resources>
+        <Style
+            x:Key="ShortcutRecorderButtonStyle"
+            BasedOn="{StaticResource SecondaryButtonStyle}"
+            TargetType="Button">
+            <Setter Property="MinWidth" Value="190" />
+            <Setter Property="MinHeight" Value="40" />
+            <Setter Property="Height" Value="40" />
+            <Setter Property="HorizontalContentAlignment" Value="Center" />
+            <Setter Property="Padding" Value="14,8" />
+        </Style>
+    </Page.Resources>
+
+    <ScrollViewer
+        HorizontalContentAlignment="Stretch"
+        HorizontalScrollBarVisibility="Disabled"
+        HorizontalScrollMode="Disabled"
+        VerticalScrollBarVisibility="Auto">
+        <Grid x:Name="PageLayout" MinHeight="620" Padding="24">
+            <VisualStateManager.VisualStateGroups>
+                <VisualStateGroup x:Name="PageWidthStates">
+                    <VisualState x:Name="MinimumWidth" />
+                    <VisualState x:Name="WideWidth">
+                        <VisualState.StateTriggers>
+                            <AdaptiveTrigger MinWindowWidth="1200" />
+                        </VisualState.StateTriggers>
+                        <VisualState.Setters>
+                            <Setter Target="PageLayout.Padding" Value="40,28" />
+                        </VisualState.Setters>
+                    </VisualState>
+                </VisualStateGroup>
+            </VisualStateManager.VisualStateGroups>
+
+            <StackPanel
+                MaxWidth="1000"
+                HorizontalAlignment="Stretch"
+                Spacing="14">
+                <Button
+                    x:Uid="SettingsBackButton"
+                    Click="OnBackClick"
+                    Style="{StaticResource BackButtonStyle}">
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <SymbolIcon Symbol="Back" />
+                        <TextBlock x:Uid="SettingsBackButtonText" VerticalAlignment="Center" />
+                    </StackPanel>
+                </Button>
+
+                <StackPanel Spacing="4">
+                    <TextBlock x:Uid="SettingsTitle" Style="{StaticResource HeadingTextStyle}" />
+                    <TextBlock x:Uid="SettingsDescription" Style="{StaticResource SecondaryTextStyle}" />
+                </StackPanel>
+
+                <Grid ColumnSpacing="14">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+
+                    <StackPanel Spacing="14">
+                        <Border Style="{StaticResource SurfaceCardStyle}">
+                            <StackPanel Spacing="9">
+                                <StackPanel Spacing="4">
+                                    <TextBlock x:Uid="SettingsLanguageLabel" Style="{StaticResource SectionHeadingTextStyle}" />
+                                    <TextBlock x:Uid="SettingsLanguageDescription" Style="{StaticResource SecondaryTextStyle}" />
+                                </StackPanel>
+                                <ComboBox
+                                    x:Uid="SettingsLanguageComboBox"
+                                    MinHeight="40"
+                                    HorizontalAlignment="Stretch"
+                                    SelectedIndex="{x:Bind ViewModel.SelectedLanguageIndex, Mode=TwoWay}">
+                                    <ComboBoxItem x:Uid="SettingsLanguageRussianItem" />
+                                    <ComboBoxItem x:Uid="SettingsLanguageEnglishItem" />
+                                </ComboBox>
+                                <TextBlock
+                                    x:Uid="SettingsRestartHint"
+                                    Style="{StaticResource CaptionTextStyle}" />
+                            </StackPanel>
+                        </Border>
+
+                        <Border Style="{StaticResource SurfaceCardStyle}">
+                            <StackPanel Spacing="10">
+                                <StackPanel Spacing="4">
+                                    <TextBlock x:Uid="SettingsTechnicalLogHeading" Style="{StaticResource SectionHeadingTextStyle}" />
+                                    <TextBlock x:Uid="SettingsTechnicalLogDescription" Style="{StaticResource SecondaryTextStyle}" />
+                                </StackPanel>
+                                <CheckBox
+                                    x:Uid="SettingsTechnicalLogCheckBox"
+                                    IsChecked="{x:Bind ViewModel.ShowTechnicalLog, Mode=TwoWay}">
+                                    <TextBlock x:Uid="SettingsTechnicalLogCheckBoxText" TextWrapping="Wrap" />
+                                </CheckBox>
+                                <Grid
+                                    ColumnSpacing="8"
+                                    Visibility="{x:Bind ViewModel.TechnicalLogVisibility, Mode=OneWay}">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+                                    <StackPanel Spacing="3">
+                                        <TextBlock x:Uid="SettingsLogFolderLabel" Style="{StaticResource SecondaryTextStyle}" />
+                                        <TextBlock
+                                            MaxLines="2"
+                                            Style="{StaticResource MonoTextStyle}"
+                                            Text="{x:Bind ViewModel.LogDirectory, Mode=OneWay}"
+                                            TextTrimming="CharacterEllipsis"
+                                            TextWrapping="Wrap" />
+                                    </StackPanel>
+                                    <Button
+                                        x:Uid="SettingsOpenLogsButton"
+                                        Grid.Column="1"
+                                        VerticalAlignment="Center"
+                                        Command="{x:Bind ViewModel.OpenLogFolderCommand}"
+                                        Style="{StaticResource CompactButtonStyle}">
+                                        <TextBlock x:Uid="SettingsOpenLogsButtonText" />
+                                    </Button>
+                                </Grid>
+                            </StackPanel>
+                        </Border>
+
+                        <Border Style="{StaticResource SurfaceCardStyle}">
+                            <StackPanel Spacing="10">
+                                <StackPanel Spacing="4">
+                                    <TextBlock x:Uid="SettingsExplorerHeading" Style="{StaticResource SectionHeadingTextStyle}" />
+                                    <TextBlock x:Uid="SettingsExplorerDescription" Style="{StaticResource SecondaryTextStyle}" />
+                                </StackPanel>
+                                <CheckBox
+                                    x:Uid="SettingsExplorerCheckBox"
+                                    IsEnabled="{x:Bind ViewModel.IsExplorerIntegrationAvailable, Mode=OneWay}"
+                                    IsChecked="{x:Bind ViewModel.ExplorerIntegration, Mode=TwoWay}">
+                                    <TextBlock x:Uid="SettingsExplorerCheckBoxText" TextWrapping="Wrap" />
+                                </CheckBox>
+                                <TextBlock
+                                    x:Uid="SettingsPortableExplorerNotice"
+                                    Style="{StaticResource CaptionTextStyle}"
+                                    TextWrapping="Wrap"
+                                    Visibility="{x:Bind ViewModel.PortableExplorerNoticeVisibility, Mode=OneWay}" />
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+
+                    <Border Grid.Column="1" Style="{StaticResource SurfaceCardStyle}">
+                        <StackPanel Spacing="12">
+                            <StackPanel Spacing="4">
+                                <TextBlock x:Uid="SettingsOutputHeading" Style="{StaticResource SectionHeadingTextStyle}" />
+                                <TextBlock x:Uid="SettingsOutputDescription" Style="{StaticResource SecondaryTextStyle}" />
+                            </StackPanel>
+
+                            <ComboBox
+                                x:Uid="SettingsOutputModeComboBox"
+                                MinHeight="40"
+                                HorizontalAlignment="Stretch"
+                                SelectedIndex="{x:Bind ViewModel.SelectedOutputModeIndex, Mode=TwoWay}">
+                                <ComboBoxItem x:Uid="SettingsOutputSameFolderItem" />
+                                <ComboBoxItem x:Uid="SettingsOutputCustomFolderItem" />
+                                <ComboBoxItem x:Uid="SettingsOutputAskItem" />
+                            </ComboBox>
+
+                            <Border
+                                MinHeight="46"
+                                Padding="11,8"
+                                Style="{StaticResource InsetSurfaceBorderStyle}">
+                                <TextBlock
+                                    x:Uid="SettingsCustomFolderPath"
+                                    AutomationProperties.HelpText="{x:Bind ViewModel.CustomOutputFolder, Mode=OneWay}"
+                                    VerticalAlignment="Center"
+                                    MaxLines="2"
+                                    Style="{StaticResource MonoTextStyle}"
+                                    Text="{x:Bind ViewModel.CustomOutputFolderDisplay, Mode=OneWay}"
+                                    TextTrimming="CharacterEllipsis"
+                                    TextWrapping="Wrap" />
+                            </Border>
+                            <Button
+                                x:Uid="SettingsChooseFolderButton"
+                                HorizontalAlignment="Stretch"
+                                Command="{x:Bind ViewModel.ChooseOutputFolderCommand}"
+                                IsEnabled="{x:Bind ViewModel.IsCustomFolder, Mode=OneWay}"
+                                Style="{StaticResource SecondaryButtonStyle}">
+                                <TextBlock x:Uid="SettingsChooseFolderButtonText" />
+                            </Button>
+                            <TextBlock
+                                Foreground="{StaticResource CliporaDangerBrush}"
+                                FontSize="12"
+                                Text="{x:Bind ViewModel.ValidationMessage, Mode=OneWay}"
+                                TextWrapping="Wrap" />
+                        </StackPanel>
+                    </Border>
+                </Grid>
+
+                <Border Style="{StaticResource SurfaceCardStyle}">
+                    <StackPanel Spacing="12">
+                        <Grid ColumnSpacing="16">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <StackPanel Spacing="4">
+                                <TextBlock x:Uid="SettingsShortcutsHeading" Style="{StaticResource SectionHeadingTextStyle}" />
+                                <TextBlock
+                                    x:Uid="SettingsShortcutsDescription"
+                                    MaxWidth="660"
+                                    HorizontalAlignment="Left"
+                                    Style="{StaticResource SecondaryTextStyle}"
+                                    TextWrapping="Wrap" />
+                            </StackPanel>
+                            <Button
+                                x:Uid="SettingsRestoreShortcutsButton"
+                                Grid.Column="1"
+                                MinHeight="38"
+                                VerticalAlignment="Center"
+                                Command="{x:Bind ViewModel.RestoreDefaultShortcutsCommand}"
+                                Style="{StaticResource CompactButtonStyle}">
+                                <TextBlock x:Uid="SettingsRestoreShortcutsButtonText" />
+                            </Button>
+                        </Grid>
+
+                        <Border
+                            Style="{StaticResource InsetSurfaceBorderStyle}">
+                            <StackPanel>
+                                <Grid MinHeight="58" ColumnSpacing="16" Padding="14,8">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+                                    <StackPanel VerticalAlignment="Center" Spacing="2">
+                                        <TextBlock x:Uid="SettingsShortcutPlayPauseLabel" FontWeight="SemiBold" />
+                                        <TextBlock
+                                            x:Uid="SettingsShortcutPlayPauseDescription"
+                                            Style="{StaticResource SecondaryTextStyle}"
+                                            TextWrapping="Wrap" />
+                                    </StackPanel>
+                                    <Button
+                                        x:Uid="SettingsShortcutPlayPauseButton"
+                                        Grid.Column="1"
+                                        AutomationProperties.ItemStatus="{x:Bind ViewModel.PlayPauseShortcutDisplay, Mode=OneWay}"
+                                        Click="OnPlayPauseShortcutClick"
+                                        LostFocus="OnShortcutButtonLostFocus"
+                                        Style="{StaticResource ShortcutRecorderButtonStyle}">
+                                        <TextBlock
+                                            FontFamily="Cascadia Mono, Consolas"
+                                            FontWeight="SemiBold"
+                                            Text="{x:Bind ViewModel.PlayPauseShortcutDisplay, Mode=OneWay}" />
+                                    </Button>
+                                </Grid>
+
+                                <Rectangle Height="1" Fill="{StaticResource CliporaBorderSubtleBrush}" />
+
+                                <Grid MinHeight="58" ColumnSpacing="16" Padding="14,8">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+                                    <StackPanel VerticalAlignment="Center" Spacing="2">
+                                        <TextBlock x:Uid="SettingsShortcutSetStartLabel" FontWeight="SemiBold" />
+                                        <TextBlock
+                                            x:Uid="SettingsShortcutSetStartDescription"
+                                            Style="{StaticResource SecondaryTextStyle}"
+                                            TextWrapping="Wrap" />
+                                    </StackPanel>
+                                    <Button
+                                        x:Uid="SettingsShortcutSetStartButton"
+                                        Grid.Column="1"
+                                        AutomationProperties.ItemStatus="{x:Bind ViewModel.SetStartShortcutDisplay, Mode=OneWay}"
+                                        Click="OnSetStartShortcutClick"
+                                        LostFocus="OnShortcutButtonLostFocus"
+                                        Style="{StaticResource ShortcutRecorderButtonStyle}">
+                                        <TextBlock
+                                            FontFamily="Cascadia Mono, Consolas"
+                                            FontWeight="SemiBold"
+                                            Text="{x:Bind ViewModel.SetStartShortcutDisplay, Mode=OneWay}" />
+                                    </Button>
+                                </Grid>
+
+                                <Rectangle Height="1" Fill="{StaticResource CliporaBorderSubtleBrush}" />
+
+                                <Grid MinHeight="58" ColumnSpacing="16" Padding="14,8">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+                                    <StackPanel VerticalAlignment="Center" Spacing="2">
+                                        <TextBlock x:Uid="SettingsShortcutSetEndLabel" FontWeight="SemiBold" />
+                                        <TextBlock
+                                            x:Uid="SettingsShortcutSetEndDescription"
+                                            Style="{StaticResource SecondaryTextStyle}"
+                                            TextWrapping="Wrap" />
+                                    </StackPanel>
+                                    <Button
+                                        x:Uid="SettingsShortcutSetEndButton"
+                                        Grid.Column="1"
+                                        AutomationProperties.ItemStatus="{x:Bind ViewModel.SetEndShortcutDisplay, Mode=OneWay}"
+                                        Click="OnSetEndShortcutClick"
+                                        LostFocus="OnShortcutButtonLostFocus"
+                                        Style="{StaticResource ShortcutRecorderButtonStyle}">
+                                        <TextBlock
+                                            FontFamily="Cascadia Mono, Consolas"
+                                            FontWeight="SemiBold"
+                                            Text="{x:Bind ViewModel.SetEndShortcutDisplay, Mode=OneWay}" />
+                                    </Button>
+                                </Grid>
+                            </StackPanel>
+                        </Border>
+
+                        <TextBlock
+                            x:Uid="SettingsShortcutRecorderHint"
+                            Style="{StaticResource CaptionTextStyle}" />
+                        <TextBlock
+                            AutomationProperties.LiveSetting="Polite"
+                            FontSize="12"
+                            Foreground="{StaticResource CliporaCyanBrush}"
+                            Text="{x:Bind ViewModel.ShortcutRecorderStatusMessage, Mode=OneWay}"
+                            TextWrapping="Wrap" />
+                        <TextBlock
+                            AutomationProperties.LiveSetting="Assertive"
+                            FontSize="12"
+                            Foreground="{StaticResource CliporaDangerBrush}"
+                            Text="{x:Bind ViewModel.ShortcutValidationMessage, Mode=OneWay}"
+                            TextWrapping="Wrap" />
+                    </StackPanel>
+                </Border>
+
+                <Grid ColumnSpacing="12">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <TextBlock
+                        AutomationProperties.LiveSetting="Polite"
+                        VerticalAlignment="Center"
+                        Foreground="{StaticResource CliporaSuccessBrush}"
+                        Text="{x:Bind ViewModel.StatusMessage, Mode=OneWay}"
+                        TextWrapping="Wrap" />
+                    <Button
+                        x:Uid="SettingsSaveButton"
+                        Grid.Column="1"
+                        MinWidth="180"
+                        Command="{x:Bind ViewModel.SaveSettingsCommand}"
+                        IsEnabled="{x:Bind ViewModel.CanSave, Mode=OneWay}"
+                        Style="{StaticResource PrimaryButtonStyle}">
+                        <TextBlock x:Uid="SettingsSaveButtonText" FontWeight="SemiBold" />
+                    </Button>
+                </Grid>
+            </StackPanel>
+        </Grid>
+    </ScrollViewer>
+</Page>

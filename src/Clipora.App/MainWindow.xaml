@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Window
+    x:Class="Clipora.App.MainWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    Title="Clipora"
+    mc:Ignorable="d">
+    <Grid
+        Background="{StaticResource CliporaCanvasBrush}"
+        MinWidth="1100"
+        MinHeight="700">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="64" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <Grid
+            Background="{StaticResource CliporaChromeBrush}"
+            BorderBrush="{StaticResource CliporaBorderSubtleBrush}"
+            BorderThickness="0,0,0,1">
+            <TitleBar
+                x:Name="AppTitleBar"
+                HorizontalAlignment="Stretch">
+                <TitleBar.LeftHeader>
+                    <StackPanel
+                        IsHitTestVisible="False"
+                        Margin="24,0,0,0"
+                        Orientation="Horizontal"
+                        Spacing="10">
+                        <Image
+                            Width="32"
+                            Height="32"
+                            Source="Assets/Brand/LogoMark.png"
+                            Stretch="Uniform" />
+                        <TextBlock
+                            VerticalAlignment="Center"
+                            FontFamily="Segoe UI Variable Display"
+                            FontSize="20"
+                            FontWeight="SemiBold"
+                            Text="Clipora" />
+                    </StackPanel>
+                </TitleBar.LeftHeader>
+                <TitleBar.RightHeader>
+                    <StackPanel Orientation="Horizontal" Spacing="4">
+                        <Button
+                            x:Uid="TitleBarSettingsButton"
+                            Click="OnSettingsClick"
+                            Style="{StaticResource TitleBarIconButtonStyle}">
+                            <FontIcon FontSize="16" Glyph="&#xE713;" />
+                        </Button>
+                        <Button
+                            x:Uid="TitleBarAboutButton"
+                            Click="OnAboutClick"
+                            Style="{StaticResource TitleBarIconButtonStyle}">
+                            <FontIcon FontSize="16" Glyph="&#xE946;" />
+                        </Button>
+                    </StackPanel>
+                </TitleBar.RightHeader>
+            </TitleBar>
+        </Grid>
+
+        <Frame x:Name="RootFrame" Grid.Row="1" />
+    </Grid>
+</Window>
