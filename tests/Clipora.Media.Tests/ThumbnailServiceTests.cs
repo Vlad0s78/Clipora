@@ -12,6 +12,38 @@ namespace Clipora.Media.Tests;
 public sealed class ThumbnailServiceTests
 {
     [Fact]
+    public void CreateStartInfo_KeyFramesOnly_SkipsNonKeyFrames()
+    {
+        ProcessStartInfo startInfo = ThumbnailService.CreateStartInfo(
+            "ffmpeg.exe",
+            @"C:\Видео\ролик.mp4",
+            @"C:\Кэш\staging",
+            TimeSpan.FromMinutes(10),
+            20,
+            keyFramesOnly: true);
+
+        int skipIndex = startInfo.ArgumentList.IndexOf("-skip_frame");
+        int inputIndex = startInfo.ArgumentList.IndexOf("-i");
+        Assert.True(skipIndex >= 0, "Ожидался аргумент -skip_frame.");
+        Assert.Equal("nokey", startInfo.ArgumentList[skipIndex + 1]);
+        Assert.True(skipIndex < inputIndex, "-skip_frame должен стоять до входного файла.");
+    }
+
+    [Fact]
+    public void CreateStartInfo_FullDecode_DoesNotSkipFrames()
+    {
+        ProcessStartInfo startInfo = ThumbnailService.CreateStartInfo(
+            "ffmpeg.exe",
+            @"C:\Видео\ролик.mp4",
+            @"C:\Кэш\staging",
+            TimeSpan.FromMinutes(10),
+            20,
+            keyFramesOnly: false);
+
+        Assert.DoesNotContain("-skip_frame", startInfo.ArgumentList);
+    }
+
+    [Fact]
     public void CreateStartInfo_UsesDirectHiddenProcessAndSingleOutputPattern()
     {
         using TemporaryDirectory temporary = new();

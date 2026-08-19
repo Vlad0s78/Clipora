@@ -186,6 +186,20 @@ public sealed class OutputFileServiceTests : IDisposable
         Assert.False(File.Exists(finalPath));
     }
 
+    [Fact]
+    public void DeleteTemporaryFile_DoesNotThrowWhenTemporaryFileIsLocked()
+    {
+        string sourcePath = CreateFile("video.mp4", "source");
+        OutputFilePlan plan = _service.CreatePlan(sourcePath, EncodeMode.Compress);
+        File.WriteAllText(plan.TemporaryPath, "temporary");
+
+        using FileStream _ = new(plan.TemporaryPath, FileMode.Open, FileAccess.Read, FileShare.None);
+
+        _service.DeleteTemporaryFile(plan);
+
+        Assert.True(File.Exists(plan.TemporaryPath));
+    }
+
     public void Dispose()
     {
         if (Directory.Exists(_temporaryDirectory))
