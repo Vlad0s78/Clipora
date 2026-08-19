@@ -122,7 +122,12 @@ public sealed partial class SettingsPageViewModel : ObservableObject, IDisposabl
             _recordingShortcutAction = null;
             _shortcutInputError = TrimShortcutValidationError.None;
             ShortcutRecorderStatusMessage = string.Empty;
-            StatusMessage = string.Empty;
+            StatusMessage = _settingsService.InvalidFileBackupPath is { } backupPath
+                ? string.Format(
+                    CultureInfo.CurrentCulture,
+                    GetString("SettingsRecoveredFromInvalidFileFormat"),
+                    backupPath)
+                : string.Empty;
             RaiseShortcutPropertiesChanged();
             UpdateValidation();
         }
@@ -309,12 +314,13 @@ public sealed partial class SettingsPageViewModel : ObservableObject, IDisposabl
         using CancellationTokenSource linked = CancellationTokenSource.CreateLinkedTokenSource(
             cancellationToken,
             _lifetimeCancellation.Token);
+        bool languageChanged = !string.Equals(
+            language,
+            ResolveLanguage(_loadedSettings),
+            StringComparison.OrdinalIgnoreCase);
         bool updateExplorerIntegration = IsExplorerIntegrationAvailable &&
             ExplorerIntegration != _loadedSettings.ExplorerIntegration ||
-            IsExplorerIntegrationAvailable && ExplorerIntegration && !string.Equals(
-                language,
-                ResolveLanguage(_loadedSettings),
-                StringComparison.OrdinalIgnoreCase);
+            IsExplorerIntegrationAvailable && ExplorerIntegration && languageChanged;
         bool settingsSaved = false;
         try
         {
@@ -346,7 +352,9 @@ public sealed partial class SettingsPageViewModel : ObservableObject, IDisposabl
             ShortcutRecorderStatusMessage = string.Empty;
             RaiseShortcutPropertiesChanged();
             UpdateValidation();
-            StatusMessage = GetString("SettingsSavedMessage");
+            StatusMessage = GetString(languageChanged
+                ? "SettingsSavedLanguageRestartMessage"
+                : "SettingsSavedMessage");
         }
         catch (OperationCanceledException) when (linked.IsCancellationRequested)
         {

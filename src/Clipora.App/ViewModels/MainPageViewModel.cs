@@ -20,6 +20,8 @@ public sealed partial class MainPageViewModel : ObservableObject, IDisposable
     private readonly IThumbnailService _thumbnailService;
     private readonly ISettingsService _settingsService;
     private readonly IOutputFolderPicker _outputFolderPicker;
+    private readonly IOutputFileLauncher _outputFileLauncher;
+    private readonly ITaskbarProgressService _taskbarProgress;
     private readonly ResourceLoader _resources;
     private readonly ILogger<MainPageViewModel> _logger;
     private readonly DispatcherQueue _dispatcherQueue;
@@ -193,6 +195,8 @@ public sealed partial class MainPageViewModel : ObservableObject, IDisposable
         IThumbnailService thumbnailService,
         ISettingsService settingsService,
         IOutputFolderPicker outputFolderPicker,
+        IOutputFileLauncher outputFileLauncher,
+        ITaskbarProgressService taskbarProgress,
         ResourceLoader resources,
         ILogger<MainPageViewModel> logger)
     {
@@ -202,6 +206,8 @@ public sealed partial class MainPageViewModel : ObservableObject, IDisposable
         _thumbnailService = thumbnailService;
         _settingsService = settingsService;
         _outputFolderPicker = outputFolderPicker;
+        _outputFileLauncher = outputFileLauncher;
+        _taskbarProgress = taskbarProgress;
         _resources = resources;
         _dispatcherQueue = DispatcherQueue.GetForCurrentThread();
         _logger = logger;
@@ -534,6 +540,8 @@ public sealed partial class MainPageViewModel : ObservableObject, IDisposable
             ProcessingFileName = FileName;
             SetState(VideoLoadState.Processing);
             processingStarted = true;
+            SystemSleepBlocker.Acquire();
+            _taskbarProgress.SetProgress(0d);
 
             var progress = new Progress<EncodeProgress>(
                 value => ReportProgress(processingCancellation, value));
@@ -598,6 +606,12 @@ public sealed partial class MainPageViewModel : ObservableObject, IDisposable
         }
         finally
         {
+            if (processingStarted)
+            {
+                SystemSleepBlocker.Release();
+                _taskbarProgress.Clear();
+            }
+
             Interlocked.CompareExchange(ref _processingCancellation, null, processingCancellation);
             processingCancellation.Dispose();
         }
@@ -699,6 +713,28 @@ public sealed partial class MainPageViewModel : ObservableObject, IDisposable
     }
 
     [RelayCommand]
+    private async Task RevealOutputAsync(CancellationToken cancellationToken)
+    {
+        string outputPath = OutputPath;
+        if (string.IsNullOrWhiteSpace(outputPath))
+        {
+            return;
+        }
+
+        try
+        {
+            await _outputFileLauncher.RevealAsync(outputPath, cancellationToken);
+        }
+        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+        {
+        }
+        catch (Exception exception)
+        {
+            _logger.LogWarning(exception, "Не удалось показать результат в Проводнике: {OutputPath}.", outputPath);
+        }
+    }
+
+    [RelayCommand]
     private void BackToLoadedVideo()
     {
         if (LoadedVideo is not null)
@@ -753,6 +789,7 @@ public sealed partial class MainPageViewModel : ObservableObject, IDisposable
         }
 
         ProgressValue = Math.Clamp(progress.Percent, 0, 100);
+        _taskbarProgress.SetProgress(ProgressValue);
         ProgressPercentText = string.Format(
             CultureInfo.CurrentCulture,
             GetString("ProgressPercentFormat"),

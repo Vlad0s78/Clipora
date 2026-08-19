@@ -223,6 +223,10 @@
   <data name="SettingsExplorerCheckBox.AutomationProperties.Name" xml:space="preserve"><value>Включить интеграцию с Проводником</value></data>
   <data name="SettingsExplorerCheckBoxText.Text" xml:space="preserve"><value>Показывать «Открыть в Clipora» и «Сжать с помощью Clipora» для поддерживаемых видео</value></data>
   <data name="SettingsPortableExplorerNotice.Text" xml:space="preserve"><value>В Portable-режиме интеграция с Проводником недоступна, поэтому приложение не оставляет записей в реестре.</value></data>
+  <data name="SettingsSavedLanguageRestartMessage" xml:space="preserve"><value>Настройки сохранены. Новый язык интерфейса применится после перезапуска Clipora.</value></data>
+  <data name="RevealOutputButton.AutomationProperties.Name" xml:space="preserve"><value>Показать результат в Проводнике</value></data>
+  <data name="RevealOutputButtonText.Text" xml:space="preserve"><value>Показать в папке</value></data>
+  <data name="SettingsRecoveredFromInvalidFileFormat" xml:space="preserve"><value>Файл настроек был повреждён, поэтому значения сброшены на стандартные. Прежний файл сохранён: {0}</value></data>
 </root>
 
 

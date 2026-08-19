@@ -9,8 +9,8 @@
     mc:Ignorable="d">
     <Grid
         Background="{StaticResource CliporaCanvasBrush}"
-        MinWidth="1100"
-        MinHeight="700">
+        MinWidth="1000"
+        MinHeight="680">
         <Grid.RowDefinitions>
             <RowDefinition Height="64" />
             <RowDefinition Height="*" />

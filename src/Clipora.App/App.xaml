@@ -55,6 +55,7 @@
             <SolidColorBrush x:Key="CliporaWarningBrush" Color="{StaticResource CliporaWarningColor}" />
             <SolidColorBrush x:Key="CliporaCyanBrush" Color="{StaticResource CliporaCyanColor}" />
             <SolidColorBrush x:Key="CliporaScrimBrush" Color="#D9090D18" />
+            <SolidColorBrush x:Key="CliporaDropHighlightBrush" Color="#1439E6FF" />
 
             <CornerRadius x:Key="CliporaControlCornerRadius">8</CornerRadius>
             <CornerRadius x:Key="CliporaInsetCornerRadius">10</CornerRadius>
@@ -181,38 +182,38 @@
 
             <Style x:Key="HeadingTextStyle" TargetType="TextBlock">
                 <Setter Property="Foreground" Value="{StaticResource CliporaWhiteBrush}" />
-                <Setter Property="FontSize" Value="28" />
+                <Setter Property="FontSize" Value="32" />
                 <Setter Property="FontWeight" Value="SemiBold" />
             </Style>
 
             <Style x:Key="SectionHeadingTextStyle" TargetType="TextBlock">
                 <Setter Property="Foreground" Value="{StaticResource CliporaTextPrimaryBrush}" />
                 <Setter Property="FontFamily" Value="Segoe UI Variable Display" />
-                <Setter Property="FontSize" Value="18" />
+                <Setter Property="FontSize" Value="21" />
                 <Setter Property="FontWeight" Value="SemiBold" />
             </Style>
 
             <Style x:Key="BodyTextStyle" TargetType="TextBlock">
                 <Setter Property="Foreground" Value="{StaticResource CliporaWhiteBrush}" />
-                <Setter Property="FontSize" Value="14" />
+                <Setter Property="FontSize" Value="16" />
             </Style>
 
             <Style x:Key="SecondaryTextStyle" TargetType="TextBlock">
                 <Setter Property="Foreground" Value="{StaticResource CliporaTextSecondaryBrush}" />
-                <Setter Property="FontSize" Value="13" />
+                <Setter Property="FontSize" Value="15" />
                 <Setter Property="TextWrapping" Value="Wrap" />
             </Style>
 
             <Style x:Key="CaptionTextStyle" TargetType="TextBlock">
                 <Setter Property="Foreground" Value="{StaticResource CliporaTextTertiaryBrush}" />
-                <Setter Property="FontSize" Value="12" />
+                <Setter Property="FontSize" Value="14" />
                 <Setter Property="TextWrapping" Value="Wrap" />
             </Style>
 
             <Style x:Key="MonoTextStyle" TargetType="TextBlock">
                 <Setter Property="Foreground" Value="{StaticResource CliporaTextSecondaryBrush}" />
                 <Setter Property="FontFamily" Value="Cascadia Mono, Consolas" />
-                <Setter Property="FontSize" Value="12" />
+                <Setter Property="FontSize" Value="13" />
                 <Setter Property="TextWrapping" Value="Wrap" />
             </Style>
         </ResourceDictionary>

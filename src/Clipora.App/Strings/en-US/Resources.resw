@@ -223,6 +223,10 @@
   <data name="SettingsExplorerCheckBox.AutomationProperties.Name" xml:space="preserve"><value>Enable File Explorer integration</value></data>
   <data name="SettingsExplorerCheckBoxText.Text" xml:space="preserve"><value>Show “Open in Clipora” and “Compress with Clipora” for supported videos</value></data>
   <data name="SettingsPortableExplorerNotice.Text" xml:space="preserve"><value>Explorer integration is unavailable in Portable mode so the app leaves no registry entries behind.</value></data>
+  <data name="SettingsSavedLanguageRestartMessage" xml:space="preserve"><value>Settings saved. The new interface language will be applied after Clipora restarts.</value></data>
+  <data name="RevealOutputButton.AutomationProperties.Name" xml:space="preserve"><value>Show the result in File Explorer</value></data>
+  <data name="RevealOutputButtonText.Text" xml:space="preserve"><value>Show in folder</value></data>
+  <data name="SettingsRecoveredFromInvalidFileFormat" xml:space="preserve"><value>The settings file was unreadable, so the values were reset to defaults. The previous file was kept at: {0}</value></data>
 </root>
 
 
