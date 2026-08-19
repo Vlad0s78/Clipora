@@ -868,9 +868,10 @@
                             FontWeight="SemiBold"
                             Text="{x:Bind ViewModel.ProgressPercentText, Mode=OneWay}" />
                         <ProgressBar
-                            Height="8"
+                            Height="14"
+                            CornerRadius="7"
                             Background="{StaticResource CliporaInsetSurfaceBrush}"
-                            Foreground="{StaticResource CliporaPurpleBrush}"
+                            Foreground="{StaticResource CliporaAccentBrush}"
                             Maximum="100"
                             AutomationProperties.Name="{x:Bind ViewModel.ProcessingProgressAutomationName, Mode=OneWay}"
                             Value="{x:Bind ViewModel.ProgressValue, Mode=OneWay}" />
