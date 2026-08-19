@@ -1,5 +1,8 @@
 using System.Diagnostics;
 using Clipora.Core;
+using Clipora.Core.Interfaces;
+using Clipora.Core.Models;
+using Clipora.Core.Tools;
 
 namespace Clipora.FFmpeg.Tests;
 
@@ -140,6 +143,40 @@ public sealed class EncoderDetectorTests
             "-c:v", "libsvtav1",
             "-preset", "10",
             "-crf", "40");
+    }
+
+    [Fact]
+    public async Task DetectAsync_DoesNotCacheAResultWithoutAnyAvailableEncoder()
+    {
+        CountingToolResolver resolver = new(Path.Combine(
+            Path.GetTempPath(),
+            $"clipora-missing-ffmpeg-{Guid.NewGuid():N}.exe"));
+        EncoderDetector detector = new(resolver);
+
+        IReadOnlyList<EncoderCapability> first = await detector.DetectAsync(CancellationToken.None);
+        IReadOnlyList<EncoderCapability> second = await detector.DetectAsync(CancellationToken.None);
+
+        Assert.DoesNotContain(first, capability => capability.IsAvailable);
+        Assert.DoesNotContain(second, capability => capability.IsAvailable);
+        Assert.Equal(2, resolver.CallCount);
+    }
+
+    private sealed class CountingToolResolver : IBundledToolResolver
+    {
+        private readonly string _ffmpegPath;
+
+        public CountingToolResolver(string ffmpegPath)
+        {
+            _ffmpegPath = ffmpegPath;
+        }
+
+        public int CallCount { get; private set; }
+
+        public BundledToolPaths Resolve()
+        {
+            CallCount++;
+            return new BundledToolPaths(_ffmpegPath, "ffprobe.exe");
+        }
     }
 
     private static void AssertContainsOrderedSubsequence(
