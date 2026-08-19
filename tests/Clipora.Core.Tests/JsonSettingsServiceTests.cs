@@ -268,6 +268,56 @@ public sealed class JsonSettingsServiceTests : IDisposable
         }
     }
 
+    [Fact]
+    public async Task SaveAndLoadAsync_RoundTripsWindowLayout()
+    {
+        JsonSettingsService service = CreateService();
+        AppSettings expected = new()
+        {
+            WindowLayout = new WindowLayout(1440, 900, IsMaximized: true),
+        };
+
+        await service.SaveAsync(expected, CancellationToken.None);
+
+        string json = await File.ReadAllTextAsync(GetSettingsPath());
+        Assert.DoesNotContain("isValid", json, StringComparison.OrdinalIgnoreCase);
+        Assert.Equal(expected, await service.LoadAsync(CancellationToken.None));
+    }
+
+    [Fact]
+    public async Task LoadAsync_DropsUndersizedWindowLayoutAndKeepsOtherSettings()
+    {
+        await WriteSettingsJsonAsync(
+            """
+            {
+              "language": "en-US",
+              "windowLayout": { "widthDip": 320, "heightDip": 240, "isMaximized": false }
+            }
+            """);
+        JsonSettingsService service = CreateService();
+
+        AppSettings settings = await service.LoadAsync(CancellationToken.None);
+
+        Assert.Null(settings.WindowLayout);
+        Assert.Equal("en-US", settings.Language);
+    }
+
+    [Fact]
+    public async Task LoadAsync_KeepsUnreadableFileAsBackupAndReportsIt()
+    {
+        await WriteSettingsJsonAsync("{ \"language\": \"ru-RU\", ");
+        JsonSettingsService service = CreateService();
+
+        AppSettings settings = await service.LoadAsync(CancellationToken.None);
+
+        string backupPath = GetSettingsPath() + ".invalid.json";
+        Assert.Equal(new AppSettings(), settings);
+        Assert.Equal(backupPath, service.InvalidFileBackupPath);
+        Assert.True(File.Exists(backupPath));
+        Assert.False(File.Exists(GetSettingsPath()));
+        Assert.Contains("ru-RU", await File.ReadAllTextAsync(backupPath), StringComparison.Ordinal);
+    }
+
     private JsonSettingsService CreateService()
     {
         return new JsonSettingsService(GetSettingsPath());
