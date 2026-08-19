@@ -5,7 +5,10 @@ namespace Clipora.Shell.Tests;
 public sealed class ExplorerIntegrationServiceTests
 {
     private const string ExecutablePath = @"C:\Program Files\Клипора 100%\Clipora.exe";
-    private static readonly string[] Extensions = [".mp4", ".mkv", ".mov"];
+    private static readonly string[] Extensions = [".mp4", ".mkv", ".mov", ".avi", ".webm"];
+
+    // Пара пунктов «Открыть»/«Сжать», у каждого: подпись, команда, иконка и MultiSelectModel.
+    private const int ValuesPerExtension = 8;
 
     [Fact]
     public void SetEnabled_RegistersExactOwnedKeysAndQuotedCommands()
@@ -29,7 +32,7 @@ public sealed class ExplorerIntegrationServiceTests
             Assert.Equal("Single", registry.GetString(compressKey, "MultiSelectModel"));
         }
 
-        Assert.Equal(24, registry.Values.Count);
+        Assert.Equal(Extensions.Length * ValuesPerExtension, registry.Values.Count);
         Assert.True(service.IsEnabled(ExecutablePath));
     }
 
@@ -42,7 +45,7 @@ public sealed class ExplorerIntegrationServiceTests
         service.SetEnabled(true, ExecutablePath, "ru-RU");
         service.SetEnabled(true, ExecutablePath, "en-US");
 
-        Assert.Equal(24, registry.Values.Count);
+        Assert.Equal(Extensions.Length * ValuesPerExtension, registry.Values.Count);
         Assert.Equal("Open in Clipora", registry.GetString(OwnedKey(".mp4", "Clipora.Open"), null));
         Assert.Equal("Compress with Clipora", registry.GetString(OwnedKey(".mp4", "Clipora.Compress"), null));
         Assert.True(service.IsEnabled(ExecutablePath));
@@ -64,9 +67,10 @@ public sealed class ExplorerIntegrationServiceTests
         Assert.All(
             registry.DeleteCalls,
             key => Assert.Matches(
-                @"^Software\\Classes\\SystemFileAssociations\\\.(mp4|mkv|mov)\\shell\\Clipora\.(Open|Compress)$",
+                @"^Software\\Classes\\SystemFileAssociations\\\.(mp4|mkv|mov|avi|webm)\\shell\\Clipora\.(Open|Compress)$",
                 key));
-        Assert.Equal(12, registry.DeleteCalls.Count);
+        // Два пункта на расширение, удаление вызвано дважды.
+        Assert.Equal(Extensions.Length * 2 * 2, registry.DeleteCalls.Count);
         Assert.False(service.IsEnabled(ExecutablePath));
     }
 

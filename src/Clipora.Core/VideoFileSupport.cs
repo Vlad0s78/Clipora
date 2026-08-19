@@ -6,7 +6,9 @@ public static class VideoFileSupport
     {
         ".mp4",
         ".mkv",
-        ".mov"
+        ".mov",
+        ".avi",
+        ".webm"
     };
 
     public static bool IsSupportedPath(string? path)

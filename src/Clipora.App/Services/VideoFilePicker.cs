@@ -12,6 +12,8 @@ public sealed class VideoFilePicker : IVideoFilePicker
         picker.FileTypeFilter.Add(".mp4");
         picker.FileTypeFilter.Add(".mkv");
         picker.FileTypeFilter.Add(".mov");
+        picker.FileTypeFilter.Add(".avi");
+        picker.FileTypeFilter.Add(".webm");
 
         WinRT.Interop.InitializeWithWindow.Initialize(picker, App.WindowHandle);
 
