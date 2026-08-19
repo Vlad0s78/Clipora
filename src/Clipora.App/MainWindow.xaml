@@ -25,25 +25,30 @@
                 HorizontalAlignment="Stretch">
                 <TitleBar.LeftHeader>
                     <StackPanel
-                        IsHitTestVisible="False"
                         Margin="24,0,0,0"
                         Orientation="Horizontal"
-                        Spacing="10">
+                        Spacing="10"
+                        VerticalAlignment="Center">
                         <Image
                             Width="32"
                             Height="32"
+                            IsHitTestVisible="False"
                             Source="Assets/Brand/LogoMark.png"
                             Stretch="Uniform" />
                         <TextBlock
+                            IsHitTestVisible="False"
                             VerticalAlignment="Center"
                             FontFamily="Segoe UI Variable Display"
                             FontSize="20"
                             FontWeight="SemiBold"
                             Text="Clipora" />
-                    </StackPanel>
-                </TitleBar.LeftHeader>
-                <TitleBar.RightHeader>
-                    <StackPanel Orientation="Horizontal" Spacing="4">
+                        <!-- Действия приложения держатся у логотипа: у кнопок окна по ним легко промахнуться. -->
+                        <Border
+                            Width="1"
+                            Height="20"
+                            Margin="10,0,4,0"
+                            VerticalAlignment="Center"
+                            Background="{StaticResource CliporaBorderStrongBrush}" />
                         <Button
                             x:Uid="TitleBarSettingsButton"
                             Click="OnSettingsClick"
@@ -57,7 +62,7 @@
                             <FontIcon FontSize="16" Glyph="&#xE946;" />
                         </Button>
                     </StackPanel>
-                </TitleBar.RightHeader>
+                </TitleBar.LeftHeader>
             </TitleBar>
         </Grid>
 

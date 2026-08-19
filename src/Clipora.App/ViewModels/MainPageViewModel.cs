@@ -8,6 +8,8 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.Logging;
 using Microsoft.UI.Dispatching;
+using Microsoft.UI.Xaml.Media;
+using Microsoft.UI.Xaml.Media.Imaging;
 using Microsoft.Windows.ApplicationModel.Resources;
 
 namespace Clipora.App.ViewModels;
@@ -31,6 +33,7 @@ public sealed partial class MainPageViewModel : ObservableObject, IDisposable
     private long _analysisRequestId;
     private VideoLoadState _processingReturnState = VideoLoadState.Loaded;
     private EncodeMode _activeOperation = EncodeMode.Compress;
+    private const int PosterDecodeWidth = 320;
 
     [ObservableProperty]
     public partial bool IsEmpty { get; set; }
@@ -188,6 +191,9 @@ public sealed partial class MainPageViewModel : ObservableObject, IDisposable
     [ObservableProperty]
     public partial IReadOnlyList<ThumbnailFrame> TimelineThumbnails { get; set; } = [];
 
+    [ObservableProperty]
+    public partial ImageSource? PosterImage { get; set; }
+
     public MainPageViewModel(
         IFFprobeService ffprobeService,
         IVideoFilePicker filePicker,
@@ -341,6 +347,8 @@ public sealed partial class MainPageViewModel : ObservableObject, IDisposable
         AudioStreamInfo? audioStream = video.PrimaryAudioStream;
 
         LoadedVideo = video;
+        PosterImage = null;
+        _ = LoadPosterAsync(video);
         SetPreviewUnavailable(false);
         FileName = Path.GetFileName(video.Path);
         FilePath = video.Path;
@@ -367,6 +375,33 @@ public sealed partial class MainPageViewModel : ObservableObject, IDisposable
             video.SubtitleStreams.Count);
 
         SetState(VideoLoadState.Loaded);
+    }
+
+    // Кадр показывается в карточке файла; его отсутствие не должно мешать работе.
+    private async Task LoadPosterAsync(VideoFileInfo video)
+    {
+        try
+        {
+            string posterPath = await _thumbnailService.GeneratePosterAsync(
+                video.Path,
+                video.Duration,
+                CancellationToken.None);
+
+            if (!ReferenceEquals(LoadedVideo, video))
+            {
+                return;
+            }
+
+            PosterImage = new BitmapImage(new Uri(posterPath))
+            {
+                DecodePixelWidth = PosterDecodeWidth,
+                DecodePixelType = DecodePixelType.Physical,
+            };
+        }
+        catch (Exception exception)
+        {
+            _logger.LogWarning(exception, "Не удалось подготовить кадр для {VideoPath}.", video.Path);
+        }
     }
 
     [RelayCommand]
@@ -723,7 +758,10 @@ public sealed partial class MainPageViewModel : ObservableObject, IDisposable
 
         try
         {
-            await _outputFileLauncher.RevealAsync(outputPath, cancellationToken);
+            if (!await _outputFileLauncher.RevealAsync(outputPath, cancellationToken))
+            {
+                _logger.LogWarning("Проводник не открылся для результата {OutputPath}.", outputPath);
+            }
         }
         catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
         {

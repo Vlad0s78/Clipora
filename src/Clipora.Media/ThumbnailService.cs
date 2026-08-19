@@ -18,6 +18,9 @@ public sealed class ThumbnailService : IThumbnailService
     internal const int MaximumDiagnosticLength = 4096;
     internal const string CacheSchemaVersion = "crop-fill-v2";
     internal const int MaximumCachedVideos = 24;
+    internal const int PosterWidth = 320;
+    internal const int PosterHeight = 180;
+    private const int PosterCacheMarker = -1;
 
     private static readonly TimeSpan CancellationDrainTimeout = TimeSpan.FromSeconds(2);
     private static readonly Dictionary<string, CacheLockEntry> CacheLocks =
@@ -134,6 +137,152 @@ public sealed class ThumbnailService : IThumbnailService
         {
             cacheLock.Release();
             ReturnCacheLock(cacheKey);
+        }
+    }
+
+    public async Task<string> GeneratePosterAsync(
+        string videoPath,
+        TimeSpan duration,
+        CancellationToken cancellationToken)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+        ArgumentException.ThrowIfNullOrWhiteSpace(videoPath);
+        if (duration <= TimeSpan.Zero)
+        {
+            throw new ArgumentOutOfRangeException(nameof(duration));
+        }
+
+        string fullVideoPath = Path.GetFullPath(videoPath);
+        FileInfo source = GetSourceInfo(fullVideoPath);
+        string cacheKey = CreateCacheKey(
+            fullVideoPath,
+            source.Length,
+            source.LastWriteTimeUtc,
+            duration,
+            PosterCacheMarker);
+        string posterPath = Path.Combine(_cacheRoot, $"{cacheKey}.poster.jpg");
+        if (IsReadableJpeg(posterPath))
+        {
+            return posterPath;
+        }
+
+        SemaphoreSlim cacheLock = RentCacheLock(cacheKey);
+
+        try
+        {
+            await cacheLock.WaitAsync(cancellationToken).ConfigureAwait(false);
+        }
+        catch
+        {
+            ReturnCacheLock(cacheKey);
+            throw;
+        }
+
+        try
+        {
+            if (IsReadableJpeg(posterPath))
+            {
+                return posterPath;
+            }
+
+            Directory.CreateDirectory(_cacheRoot);
+            string temporaryPath = Path.Combine(_cacheRoot, $"{cacheKey}.poster.{Guid.NewGuid():N}.tmp.jpg");
+
+            try
+            {
+                string ffmpegPath = _toolResolver.Resolve().FfmpegPath;
+                string diagnostic = await RunFfmpegAsync(
+                        CreatePosterStartInfo(ffmpegPath, fullVideoPath, temporaryPath, duration),
+                        cancellationToken)
+                    .ConfigureAwait(false);
+
+                if (!IsReadableJpeg(temporaryPath))
+                {
+                    throw new InvalidDataException(
+                        "FFmpeg did not create a poster frame." + FormatDiagnostic(diagnostic));
+                }
+
+                File.Move(temporaryPath, posterPath, overwrite: true);
+                return posterPath;
+            }
+            finally
+            {
+                TryDeleteFile(temporaryPath);
+            }
+        }
+        finally
+        {
+            cacheLock.Release();
+            ReturnCacheLock(cacheKey);
+        }
+    }
+
+    internal static ProcessStartInfo CreatePosterStartInfo(
+        string ffmpegPath,
+        string videoPath,
+        string outputPath,
+        TimeSpan duration)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(ffmpegPath);
+        ArgumentException.ThrowIfNullOrWhiteSpace(videoPath);
+        ArgumentException.ThrowIfNullOrWhiteSpace(outputPath);
+
+        // Кадр берётся с одной десятой длительности: первые кадры часто чёрные.
+        TimeSpan position = TimeSpan.FromTicks(duration.Ticks / 10);
+        ProcessStartInfo startInfo = new()
+        {
+            FileName = Path.GetFullPath(ffmpegPath),
+            WorkingDirectory = Path.GetDirectoryName(Path.GetFullPath(ffmpegPath)) ?? AppContext.BaseDirectory,
+            UseShellExecute = false,
+            CreateNoWindow = true,
+            WindowStyle = ProcessWindowStyle.Hidden,
+            RedirectStandardError = true,
+            StandardErrorEncoding = Encoding.UTF8,
+        };
+
+        AddArguments(
+            startInfo,
+            "-hide_banner",
+            "-loglevel", "error",
+            "-nostdin",
+            "-y",
+            "-ss", position.TotalSeconds.ToString("0.###", CultureInfo.InvariantCulture),
+            "-i", Path.GetFullPath(videoPath),
+            "-map", "0:V:0",
+            "-an",
+            "-sn",
+            "-dn",
+            "-vf", $"scale=w={PosterWidth}:h={PosterHeight}:force_original_aspect_ratio=increase,crop={PosterWidth}:{PosterHeight},setsar=1",
+            "-frames:v", "1",
+            "-q:v", "3",
+            Path.GetFullPath(outputPath));
+
+        return startInfo;
+    }
+
+    private static bool IsReadableJpeg(string path)
+    {
+        try
+        {
+            using FileStream stream = new(path, FileMode.Open, FileAccess.Read, FileShare.Read);
+            return stream.Length >= 16 && stream.ReadByte() == 0xFF && stream.ReadByte() == 0xD8;
+        }
+        catch (Exception exception) when (
+            exception is IOException or UnauthorizedAccessException or NotSupportedException or FileNotFoundException)
+        {
+            return false;
+        }
+    }
+
+    private static void TryDeleteFile(string path)
+    {
+        try
+        {
+            File.Delete(path);
+        }
+        catch (Exception exception) when (
+            exception is IOException or UnauthorizedAccessException or NotSupportedException)
+        {
         }
     }
 

@@ -74,6 +74,10 @@
                 x:Name="ContentLayout"
                 MaxWidth="1200"
                 HorizontalAlignment="Stretch">
+                <!-- Панели состояний создаются по x:Load, поэтому смена экрана проигрывает появление. -->
+                <Grid.ChildrenTransitions>
+                    <EntranceThemeTransition FromVerticalOffset="18" />
+                </Grid.ChildrenTransitions>
 
             <Border
                 MinHeight="560"
@@ -258,15 +262,24 @@
                         </Grid.ColumnDefinitions>
 
                         <Border
-                            Width="64"
+                            Width="112"
                             Height="64"
                             VerticalAlignment="Center"
                             Background="{StaticResource CliporaRaisedSurfaceBrush}"
                             CornerRadius="{StaticResource CliporaInsetCornerRadius}">
-                            <Image
-                                Width="44"
-                                Height="44"
-                                Source="Assets/Icons/Video.png" />
+                            <Grid>
+                                <Image
+                                    Width="40"
+                                    Height="40"
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"
+                                    Source="Assets/Icons/Video.png" />
+                                <Border CornerRadius="{StaticResource CliporaInsetCornerRadius}">
+                                    <Image
+                                        Source="{x:Bind ViewModel.PosterImage, Mode=OneWay}"
+                                        Stretch="UniformToFill" />
+                                </Border>
+                            </Grid>
                         </Border>
 
                         <StackPanel
@@ -841,9 +854,34 @@
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
                     </Grid.RowDefinitions>
 
-                    <StackPanel HorizontalAlignment="Center" Spacing="8">
+                    <Border
+                        Width="384"
+                        Height="216"
+                        HorizontalAlignment="Center"
+                        Background="{StaticResource CliporaInsetSurfaceBrush}"
+                        BorderBrush="{StaticResource CliporaBorderSubtleBrush}"
+                        BorderThickness="1"
+                        CornerRadius="{StaticResource CliporaCardCornerRadius}">
+                        <Grid>
+                            <Image
+                                Width="52"
+                                Height="52"
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center"
+                                Opacity="0.5"
+                                Source="Assets/Icons/Video.png" />
+                            <Border CornerRadius="{StaticResource CliporaCardCornerRadius}">
+                                <Image
+                                    Source="{x:Bind ViewModel.PosterImage, Mode=OneWay}"
+                                    Stretch="UniformToFill" />
+                            </Border>
+                        </Grid>
+                    </Border>
+
+                    <StackPanel Grid.Row="1" HorizontalAlignment="Center" Spacing="8">
                         <TextBlock
                             HorizontalAlignment="Center"
                             Style="{StaticResource HeadingTextStyle}"
@@ -860,7 +898,7 @@
                             MaxLines="1" />
                     </StackPanel>
 
-                    <StackPanel Grid.Row="1" Spacing="12">
+                    <StackPanel Grid.Row="2" Spacing="12">
                         <TextBlock
                             HorizontalAlignment="Center"
                             Foreground="{StaticResource CliporaAccentBrush}"
@@ -877,7 +915,7 @@
                             Value="{x:Bind ViewModel.ProgressValue, Mode=OneWay}" />
                     </StackPanel>
 
-                    <Grid Grid.Row="2" ColumnSpacing="10">
+                    <Grid Grid.Row="3" ColumnSpacing="10">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*" />
                             <ColumnDefinition Width="*" />
@@ -919,7 +957,7 @@
 
                     <Button
                         x:Uid="CancelProcessingButton"
-                        Grid.Row="3"
+                        Grid.Row="4"
                         MinWidth="220"
                         HorizontalAlignment="Center"
                         Command="{x:Bind ViewModel.CancelProcessingCommand}"
@@ -944,23 +982,28 @@
                     VerticalAlignment="Center"
                     Spacing="18">
                     <Grid
-                        Width="72"
-                        Height="72"
+                        Width="96"
+                        Height="96"
                         HorizontalAlignment="Center">
+                        <Ellipse Fill="{StaticResource CliporaAccentBrush}" Opacity="0.12" />
                         <Ellipse
-                            Fill="{StaticResource CliporaSuccessBrush}"
-                            Opacity="0.10" />
-                        <Ellipse
-                            Margin="7"
-                            Stroke="{StaticResource CliporaSuccessBrush}"
-                            StrokeThickness="1"
-                            Opacity="0.58" />
-                        <FontIcon
+                            Margin="6"
+                            Fill="{StaticResource CliporaSurfaceBrush}"
+                            Stroke="{StaticResource CliporaAccentBrush}"
+                            StrokeThickness="2.5" />
+                        <Viewbox
+                            Width="40"
+                            Height="40"
                             HorizontalAlignment="Center"
-                            VerticalAlignment="Center"
-                            Foreground="{StaticResource CliporaSuccessBrush}"
-                            FontSize="34"
-                            Glyph="&#xE930;" />
+                            VerticalAlignment="Center">
+                            <Path
+                                Data="M 2,13 L 10,21 L 26,3"
+                                Stroke="{StaticResource CliporaAccentBrush}"
+                                StrokeThickness="3.2"
+                                StrokeStartLineCap="Round"
+                                StrokeEndLineCap="Round"
+                                StrokeLineJoin="Round" />
+                        </Viewbox>
                     </Grid>
                     <StackPanel Spacing="8">
                         <TextBlock

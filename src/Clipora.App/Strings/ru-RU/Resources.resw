@@ -29,12 +29,12 @@
   <data name="ColorValueFormat" xml:space="preserve"><value>{0} · {1}</value></data>
   <data name="HdrValue" xml:space="preserve"><value>HDR</value></data>
   <data name="SdrValue" xml:space="preserve"><value>SDR</value></data>
-  <data name="FullColorRangeValue" xml:space="preserve"><value>Полный диапазон</value></data>
-  <data name="LimitedColorRangeValue" xml:space="preserve"><value>Ограниченный диапазон</value></data>
+  <data name="FullColorRangeValue" xml:space="preserve"><value>полный</value></data>
+  <data name="LimitedColorRangeValue" xml:space="preserve"><value>ТВ-диапазон</value></data>
   <data name="BytesValueFormat" xml:space="preserve"><value>{0:0.##} Б</value></data>
-  <data name="KibibytesValueFormat" xml:space="preserve"><value>{0:0.##} КиБ</value></data>
-  <data name="MebibytesValueFormat" xml:space="preserve"><value>{0:0.##} МиБ</value></data>
-  <data name="GibibytesValueFormat" xml:space="preserve"><value>{0:0.##} ГиБ</value></data>
+  <data name="KibibytesValueFormat" xml:space="preserve"><value>{0:0.##} КБ</value></data>
+  <data name="MebibytesValueFormat" xml:space="preserve"><value>{0:0.##} МБ</value></data>
+  <data name="GibibytesValueFormat" xml:space="preserve"><value>{0:0.##} ГБ</value></data>
   <data name="BitsValueFormat" xml:space="preserve"><value>{0:0.##} бит/с</value></data>
   <data name="KilobitsValueFormat" xml:space="preserve"><value>{0:0.##} Кбит/с</value></data>
   <data name="MegabitsValueFormat" xml:space="preserve"><value>{0:0.##} Мбит/с</value></data>
