@@ -22,8 +22,11 @@ public sealed class JsonSettingsService : ISettingsService
         },
     };
 
+    private const string InvalidFileSuffix = ".invalid.json";
+
     private readonly string _settingsPath;
     private readonly SemaphoreSlim _writeLock = new(1, 1);
+    private string? _invalidFileBackupPath;
 
     public JsonSettingsService()
         : this(Path.Combine(
@@ -38,6 +41,8 @@ public sealed class JsonSettingsService : ISettingsService
         ArgumentException.ThrowIfNullOrWhiteSpace(settingsPath);
         _settingsPath = Path.GetFullPath(settingsPath);
     }
+
+    public string? InvalidFileBackupPath => Volatile.Read(ref _invalidFileBackupPath);
 
     public async Task<AppSettings> LoadAsync(CancellationToken cancellationToken)
     {
@@ -73,6 +78,7 @@ public sealed class JsonSettingsService : ISettingsService
             return settings with
             {
                 TrimShortcuts = TrimShortcutPolicy.NormalizeOrDefault(settings.TrimShortcuts),
+                WindowLayout = NormalizeWindowLayout(settings.WindowLayout),
             };
         }
         catch (FileNotFoundException)
@@ -93,10 +99,12 @@ public sealed class JsonSettingsService : ISettingsService
         }
         catch (JsonException)
         {
+            PreserveInvalidFile();
             return new AppSettings();
         }
         catch (NotSupportedException)
         {
+            PreserveInvalidFile();
             return new AppSettings();
         }
     }
@@ -118,6 +126,7 @@ public sealed class JsonSettingsService : ISettingsService
         AppSettings normalizedSettings = settings with
         {
             TrimShortcuts = normalizedShortcuts,
+            WindowLayout = NormalizeWindowLayout(settings.WindowLayout),
         };
 
         cancellationToken.ThrowIfCancellationRequested();
@@ -168,6 +177,27 @@ public sealed class JsonSettingsService : ISettingsService
         {
             _writeLock.Release();
         }
+    }
+
+    // Нечитаемый файл сохраняется рядом: настройки пользователя не должны исчезать молча.
+    private void PreserveInvalidFile()
+    {
+        string backupPath = string.Concat(_settingsPath, InvalidFileSuffix);
+
+        try
+        {
+            File.Move(_settingsPath, backupPath, overwrite: true);
+            Volatile.Write(ref _invalidFileBackupPath, backupPath);
+        }
+        catch (Exception exception) when (
+            exception is IOException or UnauthorizedAccessException or NotSupportedException)
+        {
+        }
+    }
+
+    private static WindowLayout? NormalizeWindowLayout(WindowLayout? layout)
+    {
+        return layout is { IsValid: true } ? layout : null;
     }
 
     private static bool IsSupported(AppSettings settings)

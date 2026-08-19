@@ -29,12 +29,12 @@
   <data name="ColorValueFormat" xml:space="preserve"><value>{0} · {1}</value></data>
   <data name="HdrValue" xml:space="preserve"><value>HDR</value></data>
   <data name="SdrValue" xml:space="preserve"><value>SDR</value></data>
-  <data name="FullColorRangeValue" xml:space="preserve"><value>Full range</value></data>
-  <data name="LimitedColorRangeValue" xml:space="preserve"><value>Limited range</value></data>
+  <data name="FullColorRangeValue" xml:space="preserve"><value>full</value></data>
+  <data name="LimitedColorRangeValue" xml:space="preserve"><value>TV range</value></data>
   <data name="BytesValueFormat" xml:space="preserve"><value>{0:0.##} B</value></data>
-  <data name="KibibytesValueFormat" xml:space="preserve"><value>{0:0.##} KiB</value></data>
-  <data name="MebibytesValueFormat" xml:space="preserve"><value>{0:0.##} MiB</value></data>
-  <data name="GibibytesValueFormat" xml:space="preserve"><value>{0:0.##} GiB</value></data>
+  <data name="KibibytesValueFormat" xml:space="preserve"><value>{0:0.##} KB</value></data>
+  <data name="MebibytesValueFormat" xml:space="preserve"><value>{0:0.##} MB</value></data>
+  <data name="GibibytesValueFormat" xml:space="preserve"><value>{0:0.##} GB</value></data>
   <data name="BitsValueFormat" xml:space="preserve"><value>{0:0.##} bps</value></data>
   <data name="KilobitsValueFormat" xml:space="preserve"><value>{0:0.##} kbps</value></data>
   <data name="MegabitsValueFormat" xml:space="preserve"><value>{0:0.##} Mbps</value></data>
@@ -223,6 +223,10 @@
   <data name="SettingsExplorerCheckBox.AutomationProperties.Name" xml:space="preserve"><value>Enable File Explorer integration</value></data>
   <data name="SettingsExplorerCheckBoxText.Text" xml:space="preserve"><value>Show “Open in Clipora” and “Compress with Clipora” for supported videos</value></data>
   <data name="SettingsPortableExplorerNotice.Text" xml:space="preserve"><value>Explorer integration is unavailable in Portable mode so the app leaves no registry entries behind.</value></data>
+  <data name="SettingsSavedLanguageRestartMessage" xml:space="preserve"><value>Settings saved. The new interface language will be applied after Clipora restarts.</value></data>
+  <data name="RevealOutputButton.AutomationProperties.Name" xml:space="preserve"><value>Show the result in File Explorer</value></data>
+  <data name="RevealOutputButtonText.Text" xml:space="preserve"><value>Show in folder</value></data>
+  <data name="SettingsRecoveredFromInvalidFileFormat" xml:space="preserve"><value>The settings file was unreadable, so the values were reset to defaults. The previous file was kept at: {0}</value></data>
 </root>
 
 

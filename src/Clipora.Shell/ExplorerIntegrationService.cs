@@ -5,7 +5,7 @@ public sealed class ExplorerIntegrationService : IExplorerIntegrationService
     private const string RussianLanguage = "ru-RU";
     private const string OpenKeyName = "Clipora.Open";
     private const string CompressKeyName = "Clipora.Compress";
-    private static readonly string[] SupportedExtensions = [".mp4", ".mkv", ".mov"];
+    private static readonly string[] SupportedExtensions = [".mp4", ".mkv", ".mov", ".avi", ".webm"];
 
     private readonly ICurrentUserRegistry _registry;
 

@@ -17,6 +17,7 @@
     <WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>
     <SelfContained>true</SelfContained>
     <EnableMsixTooling>false</EnableMsixTooling>
+    <DefineConstants>$(DefineConstants);DISABLE_XAML_GENERATED_MAIN</DefineConstants>
     <PublishTrimmed>false</PublishTrimmed>
     <IncludeBundledMediaTools Condition="'$(IncludeBundledMediaTools)' == ''">true</IncludeBundledMediaTools>
     <BundledMediaToolsDirectory>$(MSBuildProjectDirectory)\..\..\ffmpeg</BundledMediaToolsDirectory>

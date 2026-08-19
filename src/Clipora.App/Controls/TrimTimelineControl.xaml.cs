@@ -17,6 +17,7 @@ public sealed partial class TrimTimelineControl : UserControl
 {
     private const double HandleHitRadius = 24d;
     private const double ThumbnailTargetWidth = 120d;
+    private const int ThumbnailDecodeWidth = 160;
     private const int MinimumThumbnailSlots = 8;
     private const int MaximumThumbnailSlots = 12;
     private const int MinorTicksPerMajorTick = 5;
@@ -24,6 +25,8 @@ public sealed partial class TrimTimelineControl : UserControl
     private const double RulerLabelWidth = 64d;
     private const double PlayheadLineWidth = 2d;
     private const double PlayheadKnobWidth = 11d;
+    private static readonly TimeSpan RulerRedrawDelay = TimeSpan.FromMilliseconds(80);
+    private Microsoft.UI.Dispatching.DispatcherQueueTimer? _rulerRedrawTimer;
     private DragTarget _dragTarget;
     private DragTarget _lastHandleTarget = DragTarget.Start;
     private INotifyCollectionChanged? _observedItems;
@@ -139,6 +142,7 @@ public sealed partial class TrimTimelineControl : UserControl
     private void OnUnloaded(object sender, RoutedEventArgs e)
     {
         _isControlLoaded = false;
+        _rulerRedrawTimer?.Stop();
         StopObservingItemsSource();
     }
 
@@ -180,8 +184,29 @@ public sealed partial class TrimTimelineControl : UserControl
     private void OnSizeChanged(object sender, SizeChangedEventArgs e)
     {
         RefreshThumbnailsForSize();
-        RefreshRuler();
+        ScheduleRulerRedraw();
         RefreshTimeline();
+    }
+
+    // Линейка состоит из десятков элементов, поэтому при изменении размера она перестраивается
+    // не на каждый кадр перетаскивания, а один раз после паузы.
+    private void ScheduleRulerRedraw()
+    {
+        if (_rulerRedrawTimer is null)
+        {
+            _rulerRedrawTimer = DispatcherQueue.CreateTimer();
+            _rulerRedrawTimer.Interval = RulerRedrawDelay;
+            _rulerRedrawTimer.IsRepeating = false;
+            _rulerRedrawTimer.Tick += OnRulerRedrawTick;
+        }
+
+        _rulerRedrawTimer.Stop();
+        _rulerRedrawTimer.Start();
+    }
+
+    private void OnRulerRedrawTick(Microsoft.UI.Dispatching.DispatcherQueueTimer sender, object args)
+    {
+        RefreshRuler();
     }
 
     private void SynchronizeDisplayValues()
@@ -244,7 +269,11 @@ public sealed partial class TrimTimelineControl : UserControl
                 ThumbnailFrame frame = displayedFrames[index];
                 content = new Image
                 {
-                    Source = new BitmapImage(new Uri(frame.ImagePath)),
+                    Source = new BitmapImage(new Uri(frame.ImagePath))
+                    {
+                        DecodePixelWidth = ThumbnailDecodeWidth,
+                        DecodePixelType = DecodePixelType.Physical
+                    },
                     Stretch = Microsoft.UI.Xaml.Media.Stretch.UniformToFill,
                     HorizontalAlignment = HorizontalAlignment.Stretch,
                     VerticalAlignment = VerticalAlignment.Stretch

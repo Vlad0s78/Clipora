@@ -1,4 +1,5 @@
 using System.Globalization;
+using System.Runtime.InteropServices;
 using Clipora.App.ViewModels;
 using Clipora.App.Services;
 using Clipora.Core;
@@ -10,7 +11,9 @@ using Clipora.Media;
 using Clipora.Shell;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml;
+using Microsoft.Windows.AppLifecycle;
 using Microsoft.Windows.ApplicationModel.Resources;
 using Microsoft.Windows.Globalization;
 using Serilog;
@@ -90,6 +93,7 @@ public partial class App : Application
                 Exit();
             };
             Window.Activate();
+            StartEncoderWarmup(logger);
 
             await Services
                 .GetRequiredService<MainPageViewModel>()
@@ -101,6 +105,88 @@ public partial class App : Application
             Log.CloseAndFlush();
             throw;
         }
+    }
+
+    /// <summary>
+    /// Обрабатывает запуск второго экземпляра: файл открывается в уже работающем окне.
+    /// </summary>
+    internal static void HandleRedirectedActivation(AppActivationArguments activationArguments)
+    {
+        string? commandLine =
+            (activationArguments.Data as Windows.ApplicationModel.Activation.ILaunchActivatedEventArgs)?.Arguments;
+        if (string.IsNullOrWhiteSpace(commandLine))
+        {
+            return;
+        }
+
+        DispatcherQueue?.TryEnqueue(async () =>
+        {
+            ILogger<App> logger = Services.GetRequiredService<ILogger<App>>();
+
+            try
+            {
+                BringWindowToFront();
+
+                // Первый аргумент строки активации — путь к самому приложению.
+                string[] arguments = CommandLineArguments.Split(commandLine).Skip(1).ToArray();
+                if (!CliporaCommandLine.TryParse(
+                        arguments,
+                        out CliporaLaunchRequest launchRequest,
+                        out CliporaCommandLineError commandLineError))
+                {
+                    logger.LogWarning(
+                        "Аргументы повторного запуска отклонены: {CommandLineError}.",
+                        commandLineError);
+                    return;
+                }
+
+                await Services
+                    .GetRequiredService<MainPageViewModel>()
+                    .HandleLaunchRequestAsync(launchRequest, CancellationToken.None);
+            }
+            catch (Exception exception)
+            {
+                logger.LogError(exception, "Не удалось обработать повторный запуск Clipora.");
+            }
+        });
+    }
+
+    private static void BringWindowToFront()
+    {
+        if (Window is null)
+        {
+            return;
+        }
+
+        if (Window.AppWindow.Presenter is OverlappedPresenter { State: OverlappedPresenterState.Minimized } presenter)
+        {
+            presenter.Restore();
+        }
+
+        Window.Activate();
+        SetForegroundWindow(WindowHandle);
+    }
+
+    [DllImport("User32.dll")]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    private static extern bool SetForegroundWindow(nint windowHandle);
+
+    private static void StartEncoderWarmup(ILogger<App> logger)
+    {
+        // Проба кодировщиков занимает секунды, поэтому она выполняется заранее и кэшируется в детекторе.
+        _ = Task.Run(async () =>
+        {
+            try
+            {
+                await Services
+                    .GetRequiredService<IEncoderDetector>()
+                    .DetectAsync(CancellationToken.None);
+            }
+            catch (Exception exception)
+            {
+                logger.LogWarning(exception, "Не удалось заранее определить доступный кодировщик.");
+            }
+        });
     }
 
     private static IServiceProvider ConfigureServices()
@@ -144,6 +230,8 @@ public partial class App : Application
             ? new DisabledExplorerIntegrationService()
             : new ExplorerIntegrationService());
         services.AddSingleton<IOutputFolderPicker, OutputFolderPicker>();
+        services.AddSingleton<IOutputFileLauncher, OutputFileLauncher>();
+        services.AddSingleton<ITaskbarProgressService, TaskbarProgressService>();
         services.AddSingleton<ILogFolderLauncher>(_ => new LogFolderLauncher(dataPaths.LogDirectory));
         services.AddSingleton<IFFmpegVersionService, FFmpegVersionService>();
         services.AddSingleton(_ => new ResourceLoader());

@@ -1,5 +1,4 @@
 using System.Buffers;
-using System.Collections.Concurrent;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Globalization;
@@ -18,9 +17,13 @@ public sealed class ThumbnailService : IThumbnailService
     internal const int ThumbnailHeight = 90;
     internal const int MaximumDiagnosticLength = 4096;
     internal const string CacheSchemaVersion = "crop-fill-v2";
+    internal const int MaximumCachedVideos = 24;
+    internal const int PosterWidth = 320;
+    internal const int PosterHeight = 180;
+    private const int PosterCacheMarker = -1;
 
     private static readonly TimeSpan CancellationDrainTimeout = TimeSpan.FromSeconds(2);
-    private static readonly ConcurrentDictionary<string, SemaphoreSlim> CacheLocks =
+    private static readonly Dictionary<string, CacheLockEntry> CacheLocks =
         new(StringComparer.OrdinalIgnoreCase);
 
     private readonly IBundledToolResolver _toolResolver;
@@ -62,8 +65,17 @@ public sealed class ThumbnailService : IThumbnailService
             return cachedFrames;
         }
 
-        SemaphoreSlim cacheLock = CacheLocks.GetOrAdd(cacheKey, static _ => new SemaphoreSlim(1, 1));
-        await cacheLock.WaitAsync(cancellationToken).ConfigureAwait(false);
+        SemaphoreSlim cacheLock = RentCacheLock(cacheKey);
+
+        try
+        {
+            await cacheLock.WaitAsync(cancellationToken).ConfigureAwait(false);
+        }
+        catch
+        {
+            ReturnCacheLock(cacheKey);
+            throw;
+        }
 
         try
         {
@@ -81,23 +93,34 @@ public sealed class ThumbnailService : IThumbnailService
             try
             {
                 string ffmpegPath = _toolResolver.Resolve().FfmpegPath;
-                ProcessStartInfo startInfo = CreateStartInfo(
-                    ffmpegPath,
-                    fullVideoPath,
-                    stagingDirectory,
-                    duration,
-                    count);
-                string diagnostic = await RunFfmpegAsync(startInfo, cancellationToken).ConfigureAwait(false);
 
+                // Сначала берём только ключевые кадры: это на порядок быстрее полного декодирования.
+                string diagnostic = await RunFfmpegAsync(
+                        CreateStartInfo(ffmpegPath, fullVideoPath, stagingDirectory, duration, count, keyFramesOnly: true),
+                        cancellationToken)
+                    .ConfigureAwait(false);
                 EnsureSourceUnchanged(source, fullVideoPath);
+
+                // Если ключевых кадров в файле меньше, чем нужно миниатюр, декодируем полностью.
                 if (!TryReadCache(stagingDirectory, duration, count, out _))
                 {
-                    throw new InvalidDataException(
-                        $"FFmpeg did not create {count} valid {ThumbnailWidth}x{ThumbnailHeight} thumbnails."
-                        + FormatDiagnostic(diagnostic));
+                    ClearDirectory(stagingDirectory);
+                    diagnostic = await RunFfmpegAsync(
+                            CreateStartInfo(ffmpegPath, fullVideoPath, stagingDirectory, duration, count, keyFramesOnly: false),
+                            cancellationToken)
+                        .ConfigureAwait(false);
+                    EnsureSourceUnchanged(source, fullVideoPath);
+
+                    if (!TryReadCache(stagingDirectory, duration, count, out _))
+                    {
+                        throw new InvalidDataException(
+                            $"FFmpeg did not create {count} valid {ThumbnailWidth}x{ThumbnailHeight} thumbnails."
+                            + FormatDiagnostic(diagnostic));
+                    }
                 }
 
                 PublishCache(stagingDirectory, cacheDirectory, duration, count);
+                TrimCache(_cacheRoot);
                 if (!TryReadCache(cacheDirectory, duration, count, out IReadOnlyList<ThumbnailFrame> frames))
                 {
                     throw new InvalidDataException("The published thumbnail cache is invalid.");
@@ -113,6 +136,153 @@ public sealed class ThumbnailService : IThumbnailService
         finally
         {
             cacheLock.Release();
+            ReturnCacheLock(cacheKey);
+        }
+    }
+
+    public async Task<string> GeneratePosterAsync(
+        string videoPath,
+        TimeSpan duration,
+        CancellationToken cancellationToken)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+        ArgumentException.ThrowIfNullOrWhiteSpace(videoPath);
+        if (duration <= TimeSpan.Zero)
+        {
+            throw new ArgumentOutOfRangeException(nameof(duration));
+        }
+
+        string fullVideoPath = Path.GetFullPath(videoPath);
+        FileInfo source = GetSourceInfo(fullVideoPath);
+        string cacheKey = CreateCacheKey(
+            fullVideoPath,
+            source.Length,
+            source.LastWriteTimeUtc,
+            duration,
+            PosterCacheMarker);
+        string posterPath = Path.Combine(_cacheRoot, $"{cacheKey}.poster.jpg");
+        if (IsReadableJpeg(posterPath))
+        {
+            return posterPath;
+        }
+
+        SemaphoreSlim cacheLock = RentCacheLock(cacheKey);
+
+        try
+        {
+            await cacheLock.WaitAsync(cancellationToken).ConfigureAwait(false);
+        }
+        catch
+        {
+            ReturnCacheLock(cacheKey);
+            throw;
+        }
+
+        try
+        {
+            if (IsReadableJpeg(posterPath))
+            {
+                return posterPath;
+            }
+
+            Directory.CreateDirectory(_cacheRoot);
+            string temporaryPath = Path.Combine(_cacheRoot, $"{cacheKey}.poster.{Guid.NewGuid():N}.tmp.jpg");
+
+            try
+            {
+                string ffmpegPath = _toolResolver.Resolve().FfmpegPath;
+                string diagnostic = await RunFfmpegAsync(
+                        CreatePosterStartInfo(ffmpegPath, fullVideoPath, temporaryPath, duration),
+                        cancellationToken)
+                    .ConfigureAwait(false);
+
+                if (!IsReadableJpeg(temporaryPath))
+                {
+                    throw new InvalidDataException(
+                        "FFmpeg did not create a poster frame." + FormatDiagnostic(diagnostic));
+                }
+
+                File.Move(temporaryPath, posterPath, overwrite: true);
+                return posterPath;
+            }
+            finally
+            {
+                TryDeleteFile(temporaryPath);
+            }
+        }
+        finally
+        {
+            cacheLock.Release();
+            ReturnCacheLock(cacheKey);
+        }
+    }
+
+    internal static ProcessStartInfo CreatePosterStartInfo(
+        string ffmpegPath,
+        string videoPath,
+        string outputPath,
+        TimeSpan duration)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(ffmpegPath);
+        ArgumentException.ThrowIfNullOrWhiteSpace(videoPath);
+        ArgumentException.ThrowIfNullOrWhiteSpace(outputPath);
+
+        // Кадр берётся с одной десятой длительности: первые кадры часто чёрные.
+        TimeSpan position = TimeSpan.FromTicks(duration.Ticks / 10);
+        ProcessStartInfo startInfo = new()
+        {
+            FileName = Path.GetFullPath(ffmpegPath),
+            WorkingDirectory = Path.GetDirectoryName(Path.GetFullPath(ffmpegPath)) ?? AppContext.BaseDirectory,
+            UseShellExecute = false,
+            CreateNoWindow = true,
+            WindowStyle = ProcessWindowStyle.Hidden,
+            RedirectStandardError = true,
+            StandardErrorEncoding = Encoding.UTF8,
+        };
+
+        AddArguments(
+            startInfo,
+            "-hide_banner",
+            "-loglevel", "error",
+            "-nostdin",
+            "-y",
+            "-ss", position.TotalSeconds.ToString("0.###", CultureInfo.InvariantCulture),
+            "-i", Path.GetFullPath(videoPath),
+            "-map", "0:V:0",
+            "-an",
+            "-sn",
+            "-dn",
+            "-vf", $"scale=w={PosterWidth}:h={PosterHeight}:force_original_aspect_ratio=increase,crop={PosterWidth}:{PosterHeight},setsar=1",
+            "-frames:v", "1",
+            "-q:v", "3",
+            Path.GetFullPath(outputPath));
+
+        return startInfo;
+    }
+
+    private static bool IsReadableJpeg(string path)
+    {
+        try
+        {
+            using FileStream stream = new(path, FileMode.Open, FileAccess.Read, FileShare.Read);
+            return stream.Length >= 16 && stream.ReadByte() == 0xFF && stream.ReadByte() == 0xD8;
+        }
+        catch (Exception exception) when (
+            exception is IOException or UnauthorizedAccessException or NotSupportedException or FileNotFoundException)
+        {
+            return false;
+        }
+    }
+
+    private static void TryDeleteFile(string path)
+    {
+        try
+        {
+            File.Delete(path);
+        }
+        catch (Exception exception) when (
+            exception is IOException or UnauthorizedAccessException or NotSupportedException)
+        {
         }
     }
 
@@ -121,7 +291,8 @@ public sealed class ThumbnailService : IThumbnailService
         string videoPath,
         string stagingDirectory,
         TimeSpan duration,
-        int count)
+        int count,
+        bool keyFramesOnly = false)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(ffmpegPath);
         ArgumentException.ThrowIfNullOrWhiteSpace(videoPath);
@@ -155,7 +326,15 @@ public sealed class ThumbnailService : IThumbnailService
             "-hide_banner",
             "-loglevel", "error",
             "-nostdin",
-            "-y",
+            "-y");
+
+        if (keyFramesOnly)
+        {
+            AddArguments(startInfo, "-skip_frame", "nokey");
+        }
+
+        AddArguments(
+            startInfo,
             "-i", Path.GetFullPath(videoPath),
             "-map", "0:V:0",
             "-an",
@@ -417,6 +596,68 @@ public sealed class ThumbnailService : IThumbnailService
         }
     }
 
+    private static SemaphoreSlim RentCacheLock(string cacheKey)
+    {
+        lock (CacheLocks)
+        {
+            if (CacheLocks.TryGetValue(cacheKey, out CacheLockEntry? entry))
+            {
+                entry.ReferenceCount++;
+                return entry.Semaphore;
+            }
+
+            CacheLockEntry newEntry = new();
+            CacheLocks.Add(cacheKey, newEntry);
+            return newEntry.Semaphore;
+        }
+    }
+
+    private static void ReturnCacheLock(string cacheKey)
+    {
+        lock (CacheLocks)
+        {
+            if (!CacheLocks.TryGetValue(cacheKey, out CacheLockEntry? entry))
+            {
+                return;
+            }
+
+            entry.ReferenceCount--;
+            if (entry.ReferenceCount > 0)
+            {
+                return;
+            }
+
+            CacheLocks.Remove(cacheKey);
+            entry.Semaphore.Dispose();
+        }
+    }
+
+    private static void TrimCache(string cacheRoot)
+    {
+        try
+        {
+            DirectoryInfo[] directories = new DirectoryInfo(cacheRoot).GetDirectories();
+            if (directories.Length <= MaximumCachedVideos)
+            {
+                return;
+            }
+
+            IEnumerable<DirectoryInfo> obsoleteDirectories = directories
+                .Where(static directory => !directory.Name.Contains(".staging.", StringComparison.Ordinal))
+                .OrderByDescending(static directory => directory.LastWriteTimeUtc)
+                .Skip(MaximumCachedVideos);
+
+            foreach (DirectoryInfo directory in obsoleteDirectories)
+            {
+                TryDeleteDirectory(directory.FullName);
+            }
+        }
+        catch (Exception exception) when (
+            exception is IOException or UnauthorizedAccessException or NotSupportedException)
+        {
+        }
+    }
+
     private static bool IsValidThumbnail(string path)
     {
         try
@@ -498,6 +739,21 @@ public sealed class ThumbnailService : IThumbnailService
         return high < 0 || low < 0 ? -1 : (high << 8) | low;
     }
 
+    private static void ClearDirectory(string path)
+    {
+        foreach (string file in Directory.EnumerateFiles(path))
+        {
+            try
+            {
+                File.Delete(file);
+            }
+            catch (Exception exception) when (
+                exception is IOException or UnauthorizedAccessException or NotSupportedException)
+            {
+            }
+        }
+    }
+
     private static void TryDeleteDirectory(string path)
     {
         try
@@ -525,6 +781,13 @@ public sealed class ThumbnailService : IThumbnailService
     {
         string value = diagnostic.Trim();
         return value.Length == 0 ? string.Empty : $" FFmpeg output: {value}";
+    }
+
+    private sealed class CacheLockEntry
+    {
+        public SemaphoreSlim Semaphore { get; } = new(1, 1);
+
+        public int ReferenceCount { get; set; } = 1;
     }
 
     private sealed class BoundedTextBuffer

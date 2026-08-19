@@ -1,3 +1,4 @@
+using Clipora.Core;
 using Clipora.Core.Interfaces;
 using Clipora.Core.Models;
 
@@ -18,11 +19,13 @@ public sealed class OutputFileService : IOutputFileService
             throw new FileNotFoundException("The source video file was not found.", fullSourcePath);
         }
 
-        string extension = Path.GetExtension(fullSourcePath);
-        if (string.IsNullOrEmpty(extension))
+        string sourceExtension = Path.GetExtension(fullSourcePath);
+        if (string.IsNullOrEmpty(sourceExtension))
         {
             throw new ArgumentException("The source video file must have an extension.", nameof(sourcePath));
         }
+
+        string extension = OutputContainerPolicy.ResolveExtension(sourceExtension, mode);
 
         string directory = ResolveOutputDirectory(fullSourcePath, outputDirectory);
         string sourceName = Path.GetFileNameWithoutExtension(fullSourcePath);
@@ -76,7 +79,16 @@ public sealed class OutputFileService : IOutputFileService
     public void DeleteTemporaryFile(OutputFilePlan plan)
     {
         ValidatedOutputFilePlan validatedPlan = ValidatePlan(plan);
-        File.Delete(validatedPlan.TemporaryPath);
+
+        // Очистка выполняется в finally, поэтому она не должна подменять исходную ошибку операции.
+        try
+        {
+            File.Delete(validatedPlan.TemporaryPath);
+        }
+        catch (Exception exception) when (
+            exception is IOException or UnauthorizedAccessException or NotSupportedException)
+        {
+        }
     }
 
     private static string ResolveOutputDirectory(string sourcePath, string? outputDirectory)

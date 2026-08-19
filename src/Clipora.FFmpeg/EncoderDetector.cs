@@ -25,6 +25,8 @@ public sealed class EncoderDetector : IEncoderDetector
     ];
 
     private readonly IBundledToolResolver _toolResolver;
+    private readonly SemaphoreSlim _detectionLock = new(1, 1);
+    private IReadOnlyList<EncoderCapability>? _detectedCapabilities;
 
     public EncoderDetector(IBundledToolResolver toolResolver)
     {
@@ -36,16 +38,53 @@ public sealed class EncoderDetector : IEncoderDetector
     {
         cancellationToken.ThrowIfCancellationRequested();
 
-        string ffmpegPath = _toolResolver.Resolve().FfmpegPath;
-        List<EncoderCapability> capabilities = new(PreferredEncoderNames.Count);
-
-        foreach (string encoderName in PreferredEncoderNames)
+        IReadOnlyList<EncoderCapability>? cachedCapabilities = Volatile.Read(ref _detectedCapabilities);
+        if (cachedCapabilities is not null)
         {
-            cancellationToken.ThrowIfCancellationRequested();
-            capabilities.Add(await ProbeAsync(ffmpegPath, encoderName, cancellationToken).ConfigureAwait(false));
+            return cachedCapabilities;
         }
 
-        return capabilities;
+        await _detectionLock.WaitAsync(cancellationToken).ConfigureAwait(false);
+
+        try
+        {
+            cachedCapabilities = Volatile.Read(ref _detectedCapabilities);
+            if (cachedCapabilities is not null)
+            {
+                return cachedCapabilities;
+            }
+
+            string ffmpegPath = _toolResolver.Resolve().FfmpegPath;
+            List<EncoderCapability> capabilities = new(PreferredEncoderNames.Count);
+
+            foreach (string encoderName in PreferredEncoderNames)
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+                EncoderCapability capability = await ProbeAsync(ffmpegPath, encoderName, cancellationToken)
+                    .ConfigureAwait(false);
+                capabilities.Add(capability);
+
+                // Профиль всегда берёт первый доступный кодировщик, поэтому остальные пробы не нужны.
+                if (capability.IsAvailable)
+                {
+                    break;
+                }
+            }
+
+            IReadOnlyList<EncoderCapability> result = capabilities.AsReadOnly();
+
+            // Пустой результат не кэшируется: недоступность может быть временной (драйвер, обновление FFmpeg).
+            if (capabilities.Exists(static capability => capability.IsAvailable))
+            {
+                Volatile.Write(ref _detectedCapabilities, result);
+            }
+
+            return result;
+        }
+        finally
+        {
+            _detectionLock.Release();
+        }
     }
 
     internal static ProcessStartInfo CreateStartInfo(string ffmpegPath, string encoderName)

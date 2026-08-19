@@ -8,6 +8,8 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.Logging;
 using Microsoft.UI.Dispatching;
+using Microsoft.UI.Xaml.Media;
+using Microsoft.UI.Xaml.Media.Imaging;
 using Microsoft.Windows.ApplicationModel.Resources;
 
 namespace Clipora.App.ViewModels;
@@ -20,6 +22,8 @@ public sealed partial class MainPageViewModel : ObservableObject, IDisposable
     private readonly IThumbnailService _thumbnailService;
     private readonly ISettingsService _settingsService;
     private readonly IOutputFolderPicker _outputFolderPicker;
+    private readonly IOutputFileLauncher _outputFileLauncher;
+    private readonly ITaskbarProgressService _taskbarProgress;
     private readonly ResourceLoader _resources;
     private readonly ILogger<MainPageViewModel> _logger;
     private readonly DispatcherQueue _dispatcherQueue;
@@ -29,6 +33,7 @@ public sealed partial class MainPageViewModel : ObservableObject, IDisposable
     private long _analysisRequestId;
     private VideoLoadState _processingReturnState = VideoLoadState.Loaded;
     private EncodeMode _activeOperation = EncodeMode.Compress;
+    private const int PosterDecodeWidth = 320;
 
     [ObservableProperty]
     public partial bool IsEmpty { get; set; }
@@ -186,6 +191,9 @@ public sealed partial class MainPageViewModel : ObservableObject, IDisposable
     [ObservableProperty]
     public partial IReadOnlyList<ThumbnailFrame> TimelineThumbnails { get; set; } = [];
 
+    [ObservableProperty]
+    public partial ImageSource? PosterImage { get; set; }
+
     public MainPageViewModel(
         IFFprobeService ffprobeService,
         IVideoFilePicker filePicker,
@@ -193,6 +201,8 @@ public sealed partial class MainPageViewModel : ObservableObject, IDisposable
         IThumbnailService thumbnailService,
         ISettingsService settingsService,
         IOutputFolderPicker outputFolderPicker,
+        IOutputFileLauncher outputFileLauncher,
+        ITaskbarProgressService taskbarProgress,
         ResourceLoader resources,
         ILogger<MainPageViewModel> logger)
     {
@@ -202,6 +212,8 @@ public sealed partial class MainPageViewModel : ObservableObject, IDisposable
         _thumbnailService = thumbnailService;
         _settingsService = settingsService;
         _outputFolderPicker = outputFolderPicker;
+        _outputFileLauncher = outputFileLauncher;
+        _taskbarProgress = taskbarProgress;
         _resources = resources;
         _dispatcherQueue = DispatcherQueue.GetForCurrentThread();
         _logger = logger;
@@ -335,6 +347,8 @@ public sealed partial class MainPageViewModel : ObservableObject, IDisposable
         AudioStreamInfo? audioStream = video.PrimaryAudioStream;
 
         LoadedVideo = video;
+        PosterImage = null;
+        _ = LoadPosterAsync(video);
         SetPreviewUnavailable(false);
         FileName = Path.GetFileName(video.Path);
         FilePath = video.Path;
@@ -361,6 +375,33 @@ public sealed partial class MainPageViewModel : ObservableObject, IDisposable
             video.SubtitleStreams.Count);
 
         SetState(VideoLoadState.Loaded);
+    }
+
+    // Кадр показывается в карточке файла; его отсутствие не должно мешать работе.
+    private async Task LoadPosterAsync(VideoFileInfo video)
+    {
+        try
+        {
+            string posterPath = await _thumbnailService.GeneratePosterAsync(
+                video.Path,
+                video.Duration,
+                CancellationToken.None);
+
+            if (!ReferenceEquals(LoadedVideo, video))
+            {
+                return;
+            }
+
+            PosterImage = new BitmapImage(new Uri(posterPath))
+            {
+                DecodePixelWidth = PosterDecodeWidth,
+                DecodePixelType = DecodePixelType.Physical,
+            };
+        }
+        catch (Exception exception)
+        {
+            _logger.LogWarning(exception, "Не удалось подготовить кадр для {VideoPath}.", video.Path);
+        }
     }
 
     [RelayCommand]
@@ -534,6 +575,8 @@ public sealed partial class MainPageViewModel : ObservableObject, IDisposable
             ProcessingFileName = FileName;
             SetState(VideoLoadState.Processing);
             processingStarted = true;
+            SystemSleepBlocker.Acquire();
+            _taskbarProgress.SetProgress(0d);
 
             var progress = new Progress<EncodeProgress>(
                 value => ReportProgress(processingCancellation, value));
@@ -598,6 +641,12 @@ public sealed partial class MainPageViewModel : ObservableObject, IDisposable
         }
         finally
         {
+            if (processingStarted)
+            {
+                SystemSleepBlocker.Release();
+                _taskbarProgress.Clear();
+            }
+
             Interlocked.CompareExchange(ref _processingCancellation, null, processingCancellation);
             processingCancellation.Dispose();
         }
@@ -699,6 +748,31 @@ public sealed partial class MainPageViewModel : ObservableObject, IDisposable
     }
 
     [RelayCommand]
+    private async Task RevealOutputAsync(CancellationToken cancellationToken)
+    {
+        string outputPath = OutputPath;
+        if (string.IsNullOrWhiteSpace(outputPath))
+        {
+            return;
+        }
+
+        try
+        {
+            if (!await _outputFileLauncher.RevealAsync(outputPath, cancellationToken))
+            {
+                _logger.LogWarning("Проводник не открылся для результата {OutputPath}.", outputPath);
+            }
+        }
+        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+        {
+        }
+        catch (Exception exception)
+        {
+            _logger.LogWarning(exception, "Не удалось показать результат в Проводнике: {OutputPath}.", outputPath);
+        }
+    }
+
+    [RelayCommand]
     private void BackToLoadedVideo()
     {
         if (LoadedVideo is not null)
@@ -753,6 +827,7 @@ public sealed partial class MainPageViewModel : ObservableObject, IDisposable
         }
 
         ProgressValue = Math.Clamp(progress.Percent, 0, 100);
+        _taskbarProgress.SetProgress(ProgressValue);
         ProgressPercentText = string.Format(
             CultureInfo.CurrentCulture,
             GetString("ProgressPercentFormat"),

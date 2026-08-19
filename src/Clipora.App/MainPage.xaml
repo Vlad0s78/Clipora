@@ -8,6 +8,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     AllowDrop="True"
     Background="{StaticResource CliporaCanvasBrush}"
+    DragLeave="OnDragLeave"
     DragOver="OnDragOver"
     Drop="OnDrop"
     KeyDown="OnPageKeyDown"
@@ -73,6 +74,10 @@
                 x:Name="ContentLayout"
                 MaxWidth="1200"
                 HorizontalAlignment="Stretch">
+                <!-- Панели состояний создаются по x:Load, поэтому смена экрана проигрывает появление. -->
+                <Grid.ChildrenTransitions>
+                    <EntranceThemeTransition FromVerticalOffset="18" />
+                </Grid.ChildrenTransitions>
 
             <Border
                 MinHeight="560"
@@ -81,21 +86,32 @@
                 BorderThickness="1"
                 CornerRadius="{StaticResource CliporaHeroCornerRadius}"
                 Padding="28"
-                Visibility="{x:Bind ViewModel.IsEmpty, Mode=OneWay}">
+                x:Name="EmptyStatePanel"
+                x:Load="{x:Bind ViewModel.IsEmpty, Mode=OneWay}">
                 <Grid>
+                    <Rectangle
+                        x:Name="DropZoneOutline"
+                        Fill="Transparent"
+                        RadiusX="14"
+                        RadiusY="14"
+                        Stroke="{StaticResource CliporaBorderStrongBrush}"
+                        StrokeDashArray="7,5"
+                        StrokeDashCap="Round"
+                        StrokeThickness="2" />
                     <StackPanel
-                        MaxWidth="520"
+                        MaxWidth="600"
                         HorizontalAlignment="Center"
                         VerticalAlignment="Center"
-                        Spacing="12">
+                        Spacing="18">
                         <Image
-                            Width="96"
-                            Height="96"
+                            Width="140"
+                            Height="140"
                             Source="Assets/Brand/LogoMark.png"
                             Stretch="Uniform" />
                         <TextBlock
                             x:Uid="HomeDropTitle"
                             HorizontalAlignment="Center"
+                            FontSize="40"
                             Style="{StaticResource HeadingTextStyle}"
                             TextAlignment="Center"
                             TextWrapping="WrapWholeWords" />
@@ -103,31 +119,32 @@
                             x:Uid="HomeDropSubtitle"
                             HorizontalAlignment="Center"
                             Foreground="{StaticResource CliporaSecondaryBrush}"
-                            FontSize="17"
+                            FontSize="20"
                             TextAlignment="Center"
                             TextWrapping="WrapWholeWords" />
                         <Button
                             x:Uid="BrowseButton"
-                            Margin="0,14,0,0"
-                            Width="220"
+                            Margin="0,22,0,0"
+                            Width="320"
+                            Height="64"
                             HorizontalAlignment="Center"
                             Command="{x:Bind ViewModel.BrowseCommand}"
                             Style="{StaticResource PrimaryButtonStyle}">
-                            <Grid ColumnSpacing="10">
+                            <Grid ColumnSpacing="14">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="Auto" />
                                     <ColumnDefinition Width="Auto" />
                                 </Grid.ColumnDefinitions>
                                 <Image
-                                    Width="24"
-                                    Height="24"
+                                    Width="30"
+                                    Height="30"
                                     VerticalAlignment="Center"
                                     Source="Assets/Icons/BrowseFile.png" />
                                 <TextBlock
                                     x:Uid="BrowseButtonText"
                                     Grid.Column="1"
                                     VerticalAlignment="Center"
-                                    FontSize="14"
+                                    FontSize="19"
                                     FontWeight="SemiBold" />
                             </Grid>
                         </Button>
@@ -138,7 +155,8 @@
             <Border
                 MinHeight="560"
                 Style="{StaticResource SurfaceCardStyle}"
-                Visibility="{x:Bind ViewModel.IsLoading, Mode=OneWay}">
+                x:Name="LoadingStatePanel"
+                x:Load="{x:Bind ViewModel.IsLoading, Mode=OneWay}">
                 <StackPanel
                     HorizontalAlignment="Center"
                     VerticalAlignment="Center"
@@ -163,7 +181,8 @@
             <Border
                 MinHeight="560"
                 Style="{StaticResource SurfaceCardStyle}"
-                Visibility="{x:Bind ViewModel.HasError, Mode=OneWay}">
+                x:Name="ErrorStatePanel"
+                x:Load="{x:Bind ViewModel.HasError, Mode=OneWay}">
                 <StackPanel
                     MaxWidth="520"
                     HorizontalAlignment="Center"
@@ -227,10 +246,11 @@
 
             <Grid
                 RowSpacing="18"
-                Visibility="{x:Bind ViewModel.IsLoaded, Mode=OneWay}">
+                x:Name="LoadedStatePanel"
+                x:Load="{x:Bind ViewModel.IsLoaded, Mode=OneWay}">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
                     <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
                 <Border MinHeight="104" Style="{StaticResource SurfaceCardStyle}">
@@ -242,15 +262,24 @@
                         </Grid.ColumnDefinitions>
 
                         <Border
-                            Width="64"
+                            Width="112"
                             Height="64"
                             VerticalAlignment="Center"
                             Background="{StaticResource CliporaRaisedSurfaceBrush}"
                             CornerRadius="{StaticResource CliporaInsetCornerRadius}">
-                            <Image
-                                Width="44"
-                                Height="44"
-                                Source="Assets/Icons/Video.png" />
+                            <Grid>
+                                <Image
+                                    Width="40"
+                                    Height="40"
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"
+                                    Source="Assets/Icons/Video.png" />
+                                <Border CornerRadius="{StaticResource CliporaInsetCornerRadius}">
+                                    <Image
+                                        Source="{x:Bind ViewModel.PosterImage, Mode=OneWay}"
+                                        Stretch="UniformToFill" />
+                                </Border>
+                            </Grid>
                         </Border>
 
                         <StackPanel
@@ -303,9 +332,9 @@
                     Style="{StaticResource SurfaceCardStyle}">
                 <Grid RowSpacing="0" ColumnSpacing="0">
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="84" />
-                        <RowDefinition Height="84" />
-                        <RowDefinition Height="84" />
+                        <RowDefinition Height="*" MinHeight="84" />
+                        <RowDefinition Height="*" MinHeight="84" />
+                        <RowDefinition Height="*" MinHeight="84" />
                     </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*" />
@@ -314,57 +343,57 @@
                     </Grid.ColumnDefinitions>
 
                     <Border BorderThickness="0,0,1,1" Style="{StaticResource MetadataCardStyle}">
-                        <StackPanel Spacing="8">
+                        <StackPanel Spacing="8" VerticalAlignment="Center">
                             <TextBlock x:Uid="DurationLabel" Style="{StaticResource SecondaryTextStyle}" />
                             <TextBlock MaxLines="1" TextTrimming="CharacterEllipsis" Style="{StaticResource SectionHeadingTextStyle}" Text="{x:Bind ViewModel.DurationText, Mode=OneWay}" />
                         </StackPanel>
                     </Border>
                     <Border Grid.Column="1" BorderThickness="0,0,1,1" Style="{StaticResource MetadataCardStyle}">
-                        <StackPanel Spacing="8">
+                        <StackPanel Spacing="8" VerticalAlignment="Center">
                             <TextBlock x:Uid="FileSizeLabel" Style="{StaticResource SecondaryTextStyle}" />
                             <TextBlock MaxLines="1" TextTrimming="CharacterEllipsis" Style="{StaticResource SectionHeadingTextStyle}" Text="{x:Bind ViewModel.FileSizeText, Mode=OneWay}" />
                         </StackPanel>
                     </Border>
                     <Border Grid.Column="2" BorderThickness="0,0,0,1" Style="{StaticResource MetadataCardStyle}">
-                        <StackPanel Spacing="8">
+                        <StackPanel Spacing="8" VerticalAlignment="Center">
                             <TextBlock x:Uid="BitrateLabel" Style="{StaticResource SecondaryTextStyle}" />
                             <TextBlock MaxLines="1" TextTrimming="CharacterEllipsis" Style="{StaticResource SectionHeadingTextStyle}" Text="{x:Bind ViewModel.BitrateText, Mode=OneWay}" />
                         </StackPanel>
                     </Border>
 
                     <Border Grid.Row="1" BorderThickness="0,0,1,1" Style="{StaticResource MetadataCardStyle}">
-                        <StackPanel Spacing="8">
+                        <StackPanel Spacing="8" VerticalAlignment="Center">
                             <TextBlock x:Uid="VideoCodecLabel" Style="{StaticResource SecondaryTextStyle}" />
                             <TextBlock MaxLines="1" TextTrimming="CharacterEllipsis" Style="{StaticResource SectionHeadingTextStyle}" Text="{x:Bind ViewModel.VideoCodecText, Mode=OneWay}" />
                         </StackPanel>
                     </Border>
                     <Border Grid.Row="1" Grid.Column="1" BorderThickness="0,0,1,1" Style="{StaticResource MetadataCardStyle}">
-                        <StackPanel Spacing="8">
+                        <StackPanel Spacing="8" VerticalAlignment="Center">
                             <TextBlock x:Uid="ResolutionLabel" Style="{StaticResource SecondaryTextStyle}" />
                             <TextBlock MaxLines="1" TextTrimming="CharacterEllipsis" Style="{StaticResource SectionHeadingTextStyle}" Text="{x:Bind ViewModel.ResolutionText, Mode=OneWay}" />
                         </StackPanel>
                     </Border>
                     <Border Grid.Row="1" Grid.Column="2" BorderThickness="0,0,0,1" Style="{StaticResource MetadataCardStyle}">
-                        <StackPanel Spacing="8">
+                        <StackPanel Spacing="8" VerticalAlignment="Center">
                             <TextBlock x:Uid="FrameRateLabel" Style="{StaticResource SecondaryTextStyle}" />
                             <TextBlock MaxLines="1" TextTrimming="CharacterEllipsis" Style="{StaticResource SectionHeadingTextStyle}" Text="{x:Bind ViewModel.FrameRateText, Mode=OneWay}" />
                         </StackPanel>
                     </Border>
 
                     <Border Grid.Row="2" BorderThickness="0,0,1,0" Style="{StaticResource MetadataCardStyle}">
-                        <StackPanel Spacing="8">
+                        <StackPanel Spacing="8" VerticalAlignment="Center">
                             <TextBlock x:Uid="AudioLabel" Style="{StaticResource SecondaryTextStyle}" />
                             <TextBlock MaxLines="1" TextTrimming="CharacterEllipsis" Style="{StaticResource SectionHeadingTextStyle}" Text="{x:Bind ViewModel.AudioText, Mode=OneWay}" />
                         </StackPanel>
                     </Border>
                     <Border Grid.Row="2" Grid.Column="1" BorderThickness="0,0,1,0" Style="{StaticResource MetadataCardStyle}">
-                        <StackPanel Spacing="8">
+                        <StackPanel Spacing="8" VerticalAlignment="Center">
                             <TextBlock x:Uid="ColorLabel" Style="{StaticResource SecondaryTextStyle}" />
                             <TextBlock MaxLines="1" TextTrimming="CharacterEllipsis" Style="{StaticResource SectionHeadingTextStyle}" Text="{x:Bind ViewModel.ColorText, Mode=OneWay}" />
                         </StackPanel>
                     </Border>
                     <Border Grid.Row="2" Grid.Column="2" Style="{StaticResource MetadataCardStyle}">
-                        <StackPanel Spacing="8">
+                        <StackPanel Spacing="8" VerticalAlignment="Center">
                             <TextBlock x:Uid="TracksLabel" Style="{StaticResource SecondaryTextStyle}" />
                             <TextBlock MaxLines="1" TextTrimming="CharacterEllipsis" Style="{StaticResource SectionHeadingTextStyle}" Text="{x:Bind ViewModel.TracksText, Mode=OneWay}" />
                         </StackPanel>
@@ -813,7 +842,8 @@
                 Padding="24"
                 Background="Transparent"
                 BorderThickness="0"
-                Visibility="{x:Bind ViewModel.IsProcessing, Mode=OneWay}">
+                x:Name="ProcessingStatePanel"
+                x:Load="{x:Bind ViewModel.IsProcessing, Mode=OneWay}">
                 <Grid
                     MaxWidth="860"
                     HorizontalAlignment="Stretch"
@@ -824,9 +854,34 @@
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
                     </Grid.RowDefinitions>
 
-                    <StackPanel HorizontalAlignment="Center" Spacing="8">
+                    <Border
+                        Width="384"
+                        Height="216"
+                        HorizontalAlignment="Center"
+                        Background="{StaticResource CliporaInsetSurfaceBrush}"
+                        BorderBrush="{StaticResource CliporaBorderSubtleBrush}"
+                        BorderThickness="1"
+                        CornerRadius="{StaticResource CliporaCardCornerRadius}">
+                        <Grid>
+                            <Image
+                                Width="52"
+                                Height="52"
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center"
+                                Opacity="0.5"
+                                Source="Assets/Icons/Video.png" />
+                            <Border CornerRadius="{StaticResource CliporaCardCornerRadius}">
+                                <Image
+                                    Source="{x:Bind ViewModel.PosterImage, Mode=OneWay}"
+                                    Stretch="UniformToFill" />
+                            </Border>
+                        </Grid>
+                    </Border>
+
+                    <StackPanel Grid.Row="1" HorizontalAlignment="Center" Spacing="8">
                         <TextBlock
                             HorizontalAlignment="Center"
                             Style="{StaticResource HeadingTextStyle}"
@@ -843,7 +898,7 @@
                             MaxLines="1" />
                     </StackPanel>
 
-                    <StackPanel Grid.Row="1" Spacing="12">
+                    <StackPanel Grid.Row="2" Spacing="12">
                         <TextBlock
                             HorizontalAlignment="Center"
                             Foreground="{StaticResource CliporaAccentBrush}"
@@ -851,15 +906,16 @@
                             FontWeight="SemiBold"
                             Text="{x:Bind ViewModel.ProgressPercentText, Mode=OneWay}" />
                         <ProgressBar
-                            Height="8"
+                            Height="14"
+                            CornerRadius="7"
                             Background="{StaticResource CliporaInsetSurfaceBrush}"
-                            Foreground="{StaticResource CliporaPurpleBrush}"
+                            Foreground="{StaticResource CliporaAccentBrush}"
                             Maximum="100"
                             AutomationProperties.Name="{x:Bind ViewModel.ProcessingProgressAutomationName, Mode=OneWay}"
                             Value="{x:Bind ViewModel.ProgressValue, Mode=OneWay}" />
                     </StackPanel>
 
-                    <Grid Grid.Row="2" ColumnSpacing="10">
+                    <Grid Grid.Row="3" ColumnSpacing="10">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*" />
                             <ColumnDefinition Width="*" />
@@ -901,7 +957,7 @@
 
                     <Button
                         x:Uid="CancelProcessingButton"
-                        Grid.Row="3"
+                        Grid.Row="4"
                         MinWidth="220"
                         HorizontalAlignment="Center"
                         Command="{x:Bind ViewModel.CancelProcessingCommand}"
@@ -918,30 +974,36 @@
                 Padding="24"
                 Background="Transparent"
                 BorderThickness="0"
-                Visibility="{x:Bind ViewModel.IsSuccess, Mode=OneWay}">
+                x:Name="SuccessStatePanel"
+                x:Load="{x:Bind ViewModel.IsSuccess, Mode=OneWay}">
                 <StackPanel
                     MaxWidth="780"
                     HorizontalAlignment="Stretch"
                     VerticalAlignment="Center"
                     Spacing="18">
                     <Grid
-                        Width="72"
-                        Height="72"
+                        Width="96"
+                        Height="96"
                         HorizontalAlignment="Center">
+                        <Ellipse Fill="{StaticResource CliporaAccentBrush}" Opacity="0.12" />
                         <Ellipse
-                            Fill="{StaticResource CliporaSuccessBrush}"
-                            Opacity="0.10" />
-                        <Ellipse
-                            Margin="7"
-                            Stroke="{StaticResource CliporaSuccessBrush}"
-                            StrokeThickness="1"
-                            Opacity="0.58" />
-                        <FontIcon
+                            Margin="6"
+                            Fill="{StaticResource CliporaSurfaceBrush}"
+                            Stroke="{StaticResource CliporaAccentBrush}"
+                            StrokeThickness="2.5" />
+                        <Viewbox
+                            Width="40"
+                            Height="40"
                             HorizontalAlignment="Center"
-                            VerticalAlignment="Center"
-                            Foreground="{StaticResource CliporaSuccessBrush}"
-                            FontSize="34"
-                            Glyph="&#xE930;" />
+                            VerticalAlignment="Center">
+                            <Path
+                                Data="M 2,13 L 10,21 L 26,3"
+                                Stroke="{StaticResource CliporaAccentBrush}"
+                                StrokeThickness="3.2"
+                                StrokeStartLineCap="Round"
+                                StrokeEndLineCap="Round"
+                                StrokeLineJoin="Round" />
+                        </Viewbox>
                     </Grid>
                     <StackPanel Spacing="8">
                         <TextBlock
@@ -1001,25 +1063,42 @@
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*" />
                             <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
                         </Grid.ColumnDefinitions>
                         <Button
-                            x:Uid="ChooseAnotherButton"
-                            HorizontalAlignment="Left"
-                            Command="{x:Bind ViewModel.BrowseCommand}"
+                            x:Uid="RevealOutputButton"
+                            HorizontalAlignment="Stretch"
+                            Command="{x:Bind ViewModel.RevealOutputCommand}"
                             Style="{StaticResource PrimaryButtonStyle}">
                             <TextBlock
+                                x:Uid="RevealOutputButtonText"
+                                FontWeight="SemiBold"
+                                MaxLines="1"
+                                TextTrimming="CharacterEllipsis" />
+                        </Button>
+                        <Button
+                            x:Uid="ChooseAnotherButton"
+                            Grid.Column="1"
+                            HorizontalAlignment="Stretch"
+                            Command="{x:Bind ViewModel.BrowseCommand}"
+                            Style="{StaticResource SecondaryActionButtonStyle}">
+                            <TextBlock
                                 x:Uid="ChooseAnotherButtonText"
-                                FontWeight="SemiBold" />
+                                FontWeight="SemiBold"
+                                MaxLines="1"
+                                TextTrimming="CharacterEllipsis" />
                         </Button>
                         <Button
                             x:Uid="BackToVideoButton"
-                            Grid.Column="1"
-                            HorizontalAlignment="Right"
+                            Grid.Column="2"
+                            HorizontalAlignment="Stretch"
                             Command="{x:Bind ViewModel.BackToPreviousOperationScreenCommand}"
                             Style="{StaticResource SecondaryActionButtonStyle}">
                             <TextBlock
                                 x:Uid="BackToVideoButtonText"
-                                FontWeight="SemiBold" />
+                                FontWeight="SemiBold"
+                                MaxLines="1"
+                                TextTrimming="CharacterEllipsis" />
                         </Button>
                     </Grid>
                 </StackPanel>

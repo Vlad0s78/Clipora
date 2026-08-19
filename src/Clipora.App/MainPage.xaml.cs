@@ -7,6 +7,7 @@ using Clipora.Core.Models;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Input;
+using Microsoft.UI.Xaml.Media;
 using Windows.ApplicationModel.DataTransfer;
 using Windows.Media.Core;
 using Windows.Media.Playback;
@@ -59,15 +60,39 @@ public sealed partial class MainPage : Page
 
     private void OnDragOver(object sender, DragEventArgs e)
     {
-        e.AcceptedOperation = e.DataView.Contains(StandardDataFormats.StorageItems)
+        bool acceptsFiles = e.DataView.Contains(StandardDataFormats.StorageItems);
+        e.AcceptedOperation = acceptsFiles
             ? DataPackageOperation.Copy
             : DataPackageOperation.None;
+        SetDropHighlight(acceptsFiles);
         e.Handled = true;
+    }
+
+    private void OnDragLeave(object sender, DragEventArgs e)
+    {
+        SetDropHighlight(false);
+    }
+
+    // Панель пустого состояния загружается по x:Load, поэтому её элементов может ещё не быть.
+    private void SetDropHighlight(bool active)
+    {
+        if (DropZoneOutline is null)
+        {
+            return;
+        }
+
+        DropZoneOutline.Stroke = (Brush)Application.Current.Resources[active
+            ? "CliporaCyanBrush"
+            : "CliporaBorderStrongBrush"];
+        DropZoneOutline.Fill = active
+            ? (Brush)Application.Current.Resources["CliporaDropHighlightBrush"]
+            : new SolidColorBrush(Microsoft.UI.Colors.Transparent);
     }
 
     private async void OnDrop(object sender, DragEventArgs e)
     {
         e.Handled = true;
+        SetDropHighlight(false);
 
         if (!e.DataView.Contains(StandardDataFormats.StorageItems))
         {
